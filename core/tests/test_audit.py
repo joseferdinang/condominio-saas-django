@@ -1,9 +1,10 @@
+from datetime import date
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
-from datetime import date
 
 from accounts.models import UsuarioEdificio
 from buildings.models import Apartamento, Edificio, ZonaComun
@@ -66,6 +67,33 @@ class CambiosAdminTests(TestCase):
         request.user = self.tesorero
         self.assertFalse(modelo_admin.has_view_permission(request))
         self.assertFalse(modelo_admin.get_queryset(request).exists())
+
+    def test_edicion_en_django_admin_registra_usuario_y_fecha(self):
+        self.client.force_login(self.admin_usuario)
+        response = self.client.post(
+            reverse("admin:buildings_edificio_change", args=[self.edificio.pk]),
+            {
+                "nombre": "Residencial Uno Renovado",
+                "direccion": "Santiago",
+                "telefono_administrativo": "",
+                "correo_administrativo": "",
+                "activo": "on",
+                "_save": "Guardar",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        cambio = Cambio.objects.get(
+            edificio=self.edificio, modelo="buildings.Edificio",
+            accion=Cambio.Accion.MODIFICAR,
+        )
+        self.assertEqual(cambio.usuario, self.admin_usuario)
+        self.assertIsNotNone(cambio.fecha)
+
+        self.client.force_login(self.tesorero)
+        self.assertEqual(
+            self.client.get(reverse("admin:core_cambio_changelist")).status_code,
+            403,
+        )
 
     def test_cambio_no_se_modifica_ni_elimina_por_orm(self):
         cambio = Cambio.objects.filter(edificio=self.edificio).first()
