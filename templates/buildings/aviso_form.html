@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Nuevo aviso · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Nuevo aviso</h1><p class="muted">Guárdalo como borrador o publícalo. El correo se envía en un paso separado.</p></div><a class="button button-secondary" href="{% url 'buildings:avisos_lista' edificio.id %}">Volver</a></div>
+<section class="card form-card elevated-form"><form method="post">{% csrf_token %}{% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}<div class="form-grid"><div class="full">{% include "includes/form_field.html" with field=form.titulo %}</div><div class="full">{% include "includes/form_field.html" with field=form.contenido %}</div>{% include "includes/form_field.html" with field=form.fecha %}{% include "includes/form_field.html" with field=form.estado %}<div class="full checkbox-field">{{ form.fijado }}<label for="{{ form.fijado.id_for_label }}">Fijar este aviso en la parte superior</label></div></div><div class="form-actions"><button class="button button-large" type="submit">Guardar aviso</button><a class="button button-secondary" href="{% url 'buildings:avisos_lista' edificio.id %}">Cancelar</a></div></form></section>
+{% endblock %}

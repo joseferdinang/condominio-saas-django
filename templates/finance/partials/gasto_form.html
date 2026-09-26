@@ -1,0 +1,13 @@
+<form method="post" enctype="multipart/form-data" hx-post="{% url 'finance:gasto_registrar' edificio.id %}" hx-target="#gasto-form-container" hx-encoding="multipart/form-data" hx-indicator=".global-progress" hx-disabled-elt="button">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-grid">
+    {% include "includes/form_field.html" with field=form.categoria %}
+    {% include "includes/form_field.html" with field=form.fecha %}
+    <div class="full">{% include "includes/form_field.html" with field=form.concepto %}</div>
+    {% include "includes/form_field.html" with field=form.importe %}
+    {% include "includes/form_field.html" with field=form.proveedor %}
+    <div class="full upload-field">{% include "includes/form_field.html" with field=form.comprobante %}<div class="upload-hint"><strong>Adjunta la evidencia</strong><span>PDF, PNG o JPG de hasta 5 MB.</span></div></div>
+  </div>
+  <div class="form-actions"><button class="button button-large" type="submit">Guardar gasto</button><a class="button button-secondary" href="{% url 'finance:gastos_lista' edificio.id %}">Cancelar</a></div>
+</form>

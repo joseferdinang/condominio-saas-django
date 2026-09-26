@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Registrar gasto · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Registrar gasto</h1><p class="muted">Documenta el egreso y conserva su comprobante.</p></div><a class="button button-secondary" href="{% url 'finance:gastos_lista' edificio.id %}">Volver</a></div>
+<div id="gasto-form-container" class="card form-card elevated-form">{% include "finance/partials/gasto_form.html" %}</div>
+{% endblock %}

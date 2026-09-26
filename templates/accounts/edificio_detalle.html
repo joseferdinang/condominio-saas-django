@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ edificio.nombre }}</h1>
+<p>{{ edificio.direccion }}</p>
+{% if puede_gestionar_usuarios %}
+  <a href="{% url 'accounts:invitar_usuario' edificio.id %}">Invitar usuario</a>
+{% endif %}
+{% if conciliacion %}
+<h2>Resumen financiero</h2>
+<dl>
+  <dt>Saldo inicial</dt><dd>RD${{ conciliacion.saldo_inicial }}</dd>
+  <dt>Ingresos confirmados</dt><dd>RD${{ conciliacion.ingresos }}</dd>
+  <dt>Gastos confirmados</dt><dd>RD${{ conciliacion.gastos }}</dd>
+  <dt>Saldo final</dt><dd>RD${{ conciliacion.saldo_final }}</dd>
+</dl>
+{% endif %}
+<h2>Apartamentos disponibles</h2>
+<ul>
+{% for apartamento in apartamentos %}
+  <li><a href="{% url 'accounts:apartamento_detalle' edificio.id apartamento.id %}">Apartamento {{ apartamento.numero }}</a></li>
+{% empty %}
+  <li>No hay apartamentos disponibles para tu cuenta.</li>
+{% endfor %}
+</ul>
+{% endblock %}

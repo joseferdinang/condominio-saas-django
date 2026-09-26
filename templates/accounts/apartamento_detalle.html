@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load formatting %}
+{% block title %}Apartamento {{ apartamento.numero }} · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Apartamento {{ apartamento.numero }}</h1><p class="muted">Estado de cuenta, cargos y pagos registrados.</p></div><div class="actions"><a class="button button-secondary" href="{% url 'accounts:edificio_detalle' edificio.id %}">Volver</a>{% if puede_gestionar_apartamentos %}<a class="button button-secondary" href="{% url 'finance:apartamento_editar' edificio.id apartamento.id %}">Editar unidad</a>{% endif %}<a class="button" href="{% url 'finance:pago_registrar' edificio.id apartamento.id %}">+ Registrar pago</a></div></div>
+
+<section class="account-hero {% if saldo_pendiente <= 0 %}account-hero-good{% endif %}">
+  <div><span class="metric-label">Saldo actual</span><strong>{{ saldo_pendiente|dop }}</strong><span class="status {% if saldo_pendiente <= 0 %}status-al_dia{% else %}status-pendiente{% endif %}">{% if saldo_pendiente <= 0 %}Al día{% else %}Pendiente{% endif %}</span></div>
+  <div class="account-hero-secondary"><span>Cuota mensual</span><strong>{{ apartamento.cuota_mensual|dop }}</strong></div>
+</section>
+
+<section class="home-section" aria-labelledby="cargos-title">
+  <div class="section-header"><div><h2 id="cargos-title">Cargos</h2><p class="section-description">Filtra por período o estado.</p></div></div>
+  <form class="card filter-bar" method="get" hx-get="{% url 'accounts:apartamento_detalle' edificio.id apartamento.id %}" hx-target="#cargos-results" hx-trigger="change" hx-push-url="true" hx-indicator=".global-progress" hx-disabled-elt="button">
+    <label>Período<select name="periodo"><option value="">Todos los períodos</option>{% for periodo in periodos %}<option value="{{ periodo.id }}" {% if periodo_seleccionado == periodo.id|stringformat:'s' %}selected{% endif %}>{{ periodo.mes|mes_nombre }} {{ periodo.anio }}</option>{% endfor %}</select></label>
+    <label>Estado<select name="estado"><option value="">Todos</option>{% for valor, etiqueta in estados_cargo %}<option value="{{ valor }}" {% if estado_seleccionado == valor %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}</select></label>
+    <div class="filter-actions"><button class="button" type="submit">Aplicar filtros</button>{% if periodo_seleccionado or estado_seleccionado %}<a href="{% url 'accounts:apartamento_detalle' edificio.id apartamento.id %}">Limpiar</a>{% endif %}</div>
+  </form>
+  <div id="cargos-results" aria-live="polite">{% include "finance/partials/cargos_table.html" %}</div>
+</section>
+
+<section class="home-section" aria-labelledby="pagos-title">
+  <div class="section-header"><div><h2 id="pagos-title">Pagos registrados</h2><p class="section-description">Descarga el recibo de cada pago confirmado.</p></div><a class="button button-small" href="{% url 'finance:pago_registrar' edificio.id apartamento.id %}">Registrar pago</a></div>
+  <div class="card table-wrap mobile-cards"><table><thead><tr><th>Fecha</th><th>Método</th><th>Referencia</th><th>Importe</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{% for pago in pagos %}<tr><td data-label="Fecha">{{ pago.fecha|date:"d/m/Y" }}</td><td data-label="Método">{{ pago.get_metodo_display }}</td><td data-label="Referencia">{{ pago.referencia|default:"—" }}</td><td data-label="Importe" class="amount">{{ pago.importe_total|dop }}</td><td data-label="Estado"><span class="status status-{{ pago.estado|lower }}">{{ pago.get_estado_display }}</span></td><td data-label="Acción" class="table-action">{% if pago.estado == 'CONFIRMADO' or pago.estado == 'ANULADO' %}<a href="{% url 'finance:recibo_descargar' edificio.id pago.id %}">Descargar recibo</a>{% elif pago.estado == 'RECHAZADO' %}<span class="muted">{{ pago.motivo_rechazo }}</span>{% else %}<span class="muted">En revisión</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="6" class="empty-state"><span class="empty-icon" aria-hidden="true">○</span><strong>Todavía no hay pagos</strong><p>Cuando registres un pago aparecerá aquí.</p></td></tr>{% endfor %}</tbody></table></div>
+</section>
+
+<section class="home-section" aria-labelledby="avisos-title"><div class="section-header"><h2 id="avisos-title">Avisos publicados</h2><a href="{% url 'buildings:avisos_lista' edificio.id %}">Ver todos</a></div><div class="notice-grid">{% for aviso in avisos %}<article class="card notice-card"><span class="feature-icon feature-icon-amber" aria-hidden="true">!</span><div><h3>{% if aviso.fijado %}<span class="pinned-label">Fijado</span>{% endif %}{{ aviso.titulo }}</h3><p>{{ aviso.contenido|truncatewords:30 }}</p><time datetime="{{ aviso.fecha|date:'c' }}">{{ aviso.fecha|date:"d/m/Y" }}</time></div></article>{% empty %}<div class="card empty-state">No hay avisos publicados.</div>{% endfor %}</div></section>
+{% endblock %}

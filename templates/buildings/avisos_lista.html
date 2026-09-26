@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Avisos · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Avisos</h1></div><div class="actions"><a class="button button-secondary" href="{% url 'accounts:edificio_detalle' edificio.id %}">Volver al resumen</a>{% if puede_gestionar %}<a class="button" href="{% url 'buildings:aviso_crear' edificio.id %}">Nuevo aviso</a>{% endif %}</div></div>
+<section class="stack">
+  {% for aviso in avisos %}
+    <article class="card notice">
+      <div class="section-header"><div><h2>{% if aviso.fijado %}<span aria-label="Fijado">📌</span> {% endif %}{{ aviso.titulo }}</h2><div class="muted">{{ aviso.fecha|date:"d/m/Y H:i" }} · {{ aviso.get_estado_display }}</div></div>{% if puede_gestionar %}<span class="status status-{{ aviso.estado|lower }}">{{ aviso.get_estado_display }}</span>{% endif %}</div>
+      <p>{{ aviso.contenido|linebreaksbr }}</p>
+      {% if puede_gestionar %}<div class="actions">{% if aviso.estado == 'BORRADOR' %}<form method="post" action="{% url 'buildings:aviso_publicar' edificio.id aviso.id %}">{% csrf_token %}<button class="button button-small" type="submit">Publicar</button></form>{% else %}<form method="post" action="{% url 'buildings:aviso_enviar' edificio.id aviso.id %}">{% csrf_token %}<button class="button button-small" type="submit">Enviar por correo</button></form>{% endif %}<span class="muted">{{ aviso.envios.count }} destinatarios registrados</span></div>{% endif %}
+    </article>
+  {% empty %}<div class="card empty-state">No hay avisos disponibles.</div>{% endfor %}
+</section>
+{% endblock %}

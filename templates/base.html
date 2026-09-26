@@ -1,0 +1,158 @@
+{% load static %}
+<!doctype html>
+<html lang="es-do" data-theme="{{ tema_visual|default:'claro' }}" data-palette="{{ paleta_visual|default:'oceano' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#073d63">
+  <title>{% block title %}Mi Condominio{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20260921.1">
+  <script src="{% static 'js/htmx.min.js' %}" defer></script>
+  <script src="{% static 'js/sidebar.js' %}?v=20260920.2" defer></script>
+  <script src="{% static 'js/theme.js' %}?v=20260920.2" defer></script>
+</head>
+<body class="{% if user.is_authenticated %}has-sidebar{% endif %}{% if nav_es_residente %} role-resident{% endif %}">
+  <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
+  <div class="global-progress htmx-indicator" aria-label="Cargando"></div>
+
+  {% if user.is_authenticated %}
+  <aside class="sidebar" id="sidebar" aria-label="Menú lateral">
+    <a class="sidebar-brand" href="{% url 'accounts:dashboard' %}">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M8 34V13L20 6l12 7v21M14 34V18h12v16M18 22h4M18 27h4"/></svg></span>
+      <span><span class="sidebar-brand-text">Mi Condominio</span><small>Administración clara</small></span>
+    </a>
+
+    <nav class="sidebar-nav" aria-label="Navegación principal">
+      {% with url_name=request.resolver_match.url_name %}
+      <a class="sidebar-link {% if url_name == 'dashboard' %}active{% endif %}" {% if url_name == 'dashboard' %}aria-current="page"{% endif %} href="{% url 'accounts:dashboard' %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span>
+      </a>
+
+      {% if nav_edificio %}
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-section">{{ nav_edificio.nombre|truncatechars:28 }}</div>
+      <a class="sidebar-link {% if url_name == 'edificio_detalle' %}active{% endif %}" {% if url_name == 'edificio_detalle' %}aria-current="page"{% endif %} href="{% url 'accounts:edificio_detalle' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/></svg><span>Resumen</span>
+      </a>
+
+      {% if nav_es_residente and nav_apartamento %}
+      <a class="sidebar-link {% if url_name == 'apartamento_detalle' or url_name == 'pago_registrar' %}active{% endif %}" {% if url_name == 'apartamento_detalle' or url_name == 'pago_registrar' %}aria-current="page"{% endif %} href="{% url 'accounts:apartamento_detalle' nav_edificio.id nav_apartamento.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 21h18M5 21V5l7-3 7 3v16M9 9h.01M15 9h.01M9 13h.01M15 13h.01M10 21v-4h4v4"/></svg><span>Mi apartamento</span>
+      </a>
+      {% else %}
+      <a class="sidebar-link {% if url_name == 'apartamentos_lista' or url_name == 'apartamento_detalle' or url_name == 'pago_registrar' %}active{% endif %}" {% if url_name == 'apartamentos_lista' or url_name == 'apartamento_detalle' or url_name == 'pago_registrar' %}aria-current="page"{% endif %} href="{% url 'finance:apartamentos_lista' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M2 20v-8l10-6 10 6v8"/><path d="M4 20v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/><path d="M14 20v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/><path d="M2 20h20"/></svg><span>Apartamentos</span>
+      </a>
+      {% endif %}
+
+      <a class="sidebar-link {% if url_name == 'reservaciones_lista' or url_name == 'reservacion_crear' or url_name == 'zona_crear' or url_name == 'zona_editar' %}active{% endif %}" {% if url_name == 'reservaciones_lista' or url_name == 'reservacion_crear' or url_name == 'zona_crear' or url_name == 'zona_editar' %}aria-current="page"{% endif %} href="{% url 'buildings:reservaciones_lista' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg><span>Reservaciones</span>
+      </a>
+
+      {% if nav_puede_finanzas %}
+      <a class="sidebar-link {% if url_name == 'gastos_lista' or url_name == 'gasto_registrar' or url_name == 'gasto_confirmar' %}active{% endif %}" {% if url_name == 'gastos_lista' or url_name == 'gasto_registrar' or url_name == 'gasto_confirmar' %}aria-current="page"{% endif %} href="{% url 'finance:gastos_lista' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2"/><path d="M2 9.1C3 8.2 5 7.5 8 7.5"/></svg><span>Gastos</span>
+      </a>
+      {% endif %}
+
+      {% if nav_puede_reportes %}
+      <a class="sidebar-link {% if url_name == 'reportes_index' or url_name == 'reporte_exportar' %}active{% endif %}" {% if url_name == 'reportes_index' or url_name == 'reporte_exportar' %}aria-current="page"{% endif %} href="{% url 'finance:reportes_index' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16V9M11 16V5M15 16v-4M19 16V9"/></svg><span>Reportes</span>
+      </a>
+      {% endif %}
+
+      <a class="sidebar-link {% if url_name == 'avisos_lista' or url_name == 'aviso_crear' %}active{% endif %}" {% if url_name == 'avisos_lista' or url_name == 'aviso_crear' %}aria-current="page"{% endif %} href="{% url 'buildings:avisos_lista' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>Avisos</span>
+      </a>
+
+      {% if nav_puede_usuarios %}
+      <a class="sidebar-link {% if url_name == 'invitar_usuario' %}active{% endif %}" {% if url_name == 'invitar_usuario' %}aria-current="page"{% endif %} href="{% url 'accounts:invitar_usuario' nav_edificio.id %}">
+        <svg class="sidebar-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><span>Usuarios</span>
+      </a>
+      {% endif %}
+      {% endif %}
+      {% endwith %}
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="appearance-control" data-preferences-url="{% url 'accounts:guardar_preferencia_visual' %}">
+        <div class="appearance-panel" id="appearance-panel" aria-hidden="true">
+          <div>
+            <strong>Colores del portal</strong>
+            <small>Tu selección se guarda en tu cuenta.</small>
+          </div>
+          <div class="palette-options" role="group" aria-label="Paleta de colores">
+            <button class="palette-option palette-oceano" type="button" data-palette="oceano" aria-label="Paleta Océano" aria-pressed="{% if paleta_visual == 'oceano' %}true{% else %}false{% endif %}"><span></span></button>
+            <button class="palette-option palette-esmeralda" type="button" data-palette="esmeralda" aria-label="Paleta Esmeralda" aria-pressed="{% if paleta_visual == 'esmeralda' %}true{% else %}false{% endif %}"><span></span></button>
+            <button class="palette-option palette-violeta" type="button" data-palette="violeta" aria-label="Paleta Violeta" aria-pressed="{% if paleta_visual == 'violeta' %}true{% else %}false{% endif %}"><span></span></button>
+            <button class="palette-option palette-coral" type="button" data-palette="coral" aria-label="Paleta Coral" aria-pressed="{% if paleta_visual == 'coral' %}true{% else %}false{% endif %}"><span></span></button>
+          </div>
+          <span class="appearance-status" role="status" aria-live="polite"></span>
+        </div>
+        <div class="appearance-buttons">
+          <button class="appearance-button theme-toggle" type="button" data-theme-toggle aria-label="Activar modo oscuro" aria-pressed="{% if tema_visual == 'oscuro' %}true{% else %}false{% endif %}">
+            <svg class="theme-icon theme-icon-moon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+            <svg class="theme-icon theme-icon-sun" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
+            <span class="theme-toggle-label">{% if tema_visual == 'oscuro' %}Modo claro{% else %}Modo oscuro{% endif %}</span>
+          </button>
+          <button class="appearance-button palette-toggle" type="button" aria-label="Cambiar paleta de colores" aria-controls="appearance-panel" aria-expanded="false">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 22a10 10 0 1 1 10-10c0 2.2-1.8 4-4 4h-1.8c-.7 0-1.2.7-.9 1.3l.2.5c.7 1.8-.6 4.2-3.5 4.2Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="10" cy="6.5" r="1"/><circle cx="15" cy="7" r="1"/><circle cx="17" cy="11" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="user-identity">
+        {% firstof user.first_name user.username as display_name %}
+        <span class="user-avatar" aria-hidden="true">{{ display_name|first|upper }}</span>
+        <span><strong>{{ user.get_full_name|default:user.get_username }}</strong>{% if nav_membresia %}<small>{{ nav_membresia.get_rol_display }}</small>{% endif %}</span>
+      </div>
+      <div class="sidebar-footer-actions">
+        <a href="{% url 'accounts:password_change' %}">Mi cuenta</a>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link-button" type="submit">Salir</button></form>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  {% endif %}
+
+  <div class="main-area">
+    {% if user.is_authenticated %}
+    <header class="top-bar">
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+      <div class="mobile-brand"><span class="brand-dot" aria-hidden="true"></span> Mi Condominio</div>
+      <div class="top-bar-title">
+        {% if nav_edificio %}
+          {% if nav_edificios.count > 1 %}
+          <details class="building-switcher"><summary>{{ nav_edificio.nombre }}</summary><div class="building-switcher-menu">{% for item in nav_edificios %}<a href="{% url 'accounts:edificio_detalle' item.id %}" {% if item.id == nav_edificio.id %}aria-current="page"{% endif %}>{{ item.nombre }}</a>{% endfor %}</div></details>
+          {% else %}<span>{{ nav_edificio.nombre }}</span>{% endif %}
+        {% else %}<span>Portal de condominios</span>{% endif %}
+      </div>
+      <a class="top-account" href="{% url 'accounts:password_change' %}" aria-label="Mi cuenta">{% firstof user.first_name user.username as display_name %}{{ display_name|first|upper }}</a>
+    </header>
+    {% endif %}
+
+    <main id="contenido-principal" class="{% if user.is_authenticated %}page-content{% else %}auth-layout{% endif %}">
+      {% if messages %}<div class="messages" aria-live="polite">{% for message in messages %}<div class="message message-{{ message.tags|default:'info' }}"><span aria-hidden="true">{% if 'success' in message.tags %}✓{% else %}i{% endif %}</span><span>{{ message }}</span></div>{% endfor %}</div>{% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    {% if user.is_authenticated and nav_edificio %}
+    {% with url_name=request.resolver_match.url_name %}
+    <nav class="mobile-bottom-nav" aria-label="Navegación móvil">
+      <a class="{% if url_name == 'edificio_detalle' %}active{% endif %}" href="{% url 'accounts:edificio_detalle' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Inicio</span></a>
+      {% if nav_es_residente and nav_apartamento %}
+      <a class="{% if url_name == 'apartamento_detalle' %}active{% endif %}" href="{% url 'accounts:apartamento_detalle' nav_edificio.id nav_apartamento.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 21V5l7-3 7 3v16M9 9h.01M15 9h.01M10 21v-4h4v4"/></svg><span>Cuenta</span></a>
+      <a class="{% if url_name == 'pago_registrar' %}active{% endif %}" href="{% url 'finance:pago_registrar' nav_edificio.id nav_apartamento.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg><span>Pago</span></a>
+      {% else %}
+      <a class="{% if url_name == 'apartamentos_lista' or url_name == 'apartamento_detalle' %}active{% endif %}" href="{% url 'finance:apartamentos_lista' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 21h18M5 21V5l7-3 7 3v16M9 9h.01M15 9h.01M10 21v-4h4v4"/></svg><span>Aptos.</span></a>
+      {% if nav_puede_finanzas %}<a class="{% if url_name == 'gastos_lista' or url_name == 'gasto_registrar' %}active{% endif %}" href="{% url 'finance:gastos_lista' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16v12H4zM7 7V5h10v2M8 12h8M8 16h5"/></svg><span>Gastos</span></a>{% elif nav_puede_reportes %}<a class="{% if url_name == 'reportes_index' %}active{% endif %}" href="{% url 'finance:reportes_index' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3v18h18M7 16V9M12 16V5M17 16v-4"/></svg><span>Reportes</span></a>{% endif %}
+      {% endif %}
+      <a class="{% if url_name == 'avisos_lista' %}active{% endif %}" href="{% url 'buildings:avisos_lista' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg><span>Avisos</span></a>
+      <a class="{% if url_name == 'password_change' %}active{% endif %}" href="{% url 'accounts:password_change' %}"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/></svg><span>Perfil</span></a>
+    </nav>
+    {% endwith %}
+    {% endif %}
+
+    <footer class="site-footer">Mi Condominio · Administración transparente para tu comunidad</footer>
+  </div>
+</body>
+</html>

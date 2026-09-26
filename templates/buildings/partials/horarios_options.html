@@ -1,0 +1,1 @@
+{% for inicio, fin in horarios %}<option value="{{ inicio|time:'H:i' }}">{{ inicio|time:"H:i" }} – {{ fin|time:"H:i" }}</option>{% empty %}<option value="">No hay horarios disponibles</option>{% endfor %}

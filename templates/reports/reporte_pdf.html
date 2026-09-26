@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es-do">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page { size: A4 landscape; margin: 15mm 12mm 17mm; @bottom-right { content: "Página " counter(page) " de " counter(pages); color: #66727f; font-size: 8pt; } }
+    body { color: #17212b; font-family: "DejaVu Sans", sans-serif; font-size: 9pt; line-height: 1.35; }
+    .header { border-bottom: 3px solid #174f67; margin-bottom: 12px; padding-bottom: 8px; }
+    h1 { color: #174f67; font-size: 19pt; margin: 0 0 5px; }
+    h2 { color: #174f67; font-size: 12pt; margin: 16px 0 6px; }
+    .metadata { color: #4c5a65; display: table; width: 100%; }
+    .metadata div { display: table-cell; }
+    .metadata div:last-child { text-align: right; }
+    .totals { display: table; border-spacing: 6px; margin: 0 -6px 8px; width: calc(100% + 12px); }
+    .total { background: #eef4f6; border: 1px solid #d2dde2; display: table-cell; padding: 7px; }
+    .total span { color: #66727f; display: block; font-size: 7.5pt; }
+    .total strong { display: block; font-size: 11pt; margin-top: 2px; }
+    table { border-collapse: collapse; table-layout: auto; width: 100%; }
+    thead { display: table-header-group; }
+    th { background: #174f67; color: white; font-size: 8pt; padding: 6px; text-align: left; }
+    td { border-bottom: 1px solid #dce3e8; padding: 5px 6px; vertical-align: top; }
+    tr { break-inside: avoid; }
+    .empty { color: #66727f; font-style: italic; padding: 12px; text-align: center; }
+    .footer-note { color: #66727f; font-size: 7.5pt; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>{{ reporte.titulo }}</h1>
+    <div class="metadata"><div><strong>{{ reporte.edificio.nombre }}</strong><br>{{ reporte.edificio.direccion }}</div><div>Período: <strong>{{ reporte.periodo_consultado }}</strong><br>Generado: {{ reporte.generado_en|date:"d/m/Y H:i" }}</div></div>
+  </header>
+  <section class="totals">{% for total in totales_pdf %}<div class="total"><span>{{ total.etiqueta }}</span><strong>{{ total.valor }}</strong></div>{% endfor %}</section>
+  {% for seccion in secciones_pdf %}
+    <section>
+      <h2>{{ seccion.titulo }}</h2>
+      <table>
+        <thead><tr>{% for columna in seccion.columnas %}<th>{{ columna.titulo }}</th>{% endfor %}</tr></thead>
+        <tbody>{% for fila in seccion.filas %}<tr>{% for valor in fila %}<td>{{ valor }}</td>{% endfor %}</tr>{% empty %}<tr><td class="empty" colspan="{{ seccion.columnas|length }}">Sin registros para los filtros seleccionados</td></tr>{% endfor %}</tbody>
+      </table>
+    </section>
+  {% endfor %}
+  <p class="footer-note">Los totales se calculan únicamente con movimientos confirmados y dentro del edificio autorizado.</p>
+</body>
+</html>

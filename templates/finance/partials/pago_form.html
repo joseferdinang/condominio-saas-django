@@ -1,0 +1,12 @@
+<form method="post" enctype="multipart/form-data" hx-post="{% url 'finance:pago_registrar' edificio.id apartamento.id %}" hx-target="#pago-form-container" hx-encoding="multipart/form-data" hx-indicator=".global-progress" hx-disabled-elt="button">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-grid">
+    {% include "includes/form_field.html" with field=form.importe_total %}
+    {% include "includes/form_field.html" with field=form.fecha %}
+    {% include "includes/form_field.html" with field=form.metodo %}
+    {% include "includes/form_field.html" with field=form.referencia %}
+    <div class="full upload-field">{% include "includes/form_field.html" with field=form.comprobante %}<div class="upload-hint"><strong>PDF, PNG o JPG</strong><span>Máximo 5 MB. Procura que el importe y la referencia sean legibles.</span></div></div>
+  </div>
+  <div class="form-actions"><button class="button button-large" type="submit">Registrar pago</button><a class="button button-secondary" href="{% url 'accounts:apartamento_detalle' edificio.id apartamento.id %}">Cancelar</a></div>
+</form>

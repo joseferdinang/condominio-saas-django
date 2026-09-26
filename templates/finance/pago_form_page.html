@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Registrar pago · Apto. {{ apartamento.numero }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }} · Apto. {{ apartamento.numero }}</p><h1>Registrar pago</h1><p class="muted">Registra los datos y adjunta un comprobante legible para su revisión.</p></div><a class="button button-secondary" href="{% url 'accounts:apartamento_detalle' edificio.id apartamento.id %}">Volver</a></div>
+<div id="pago-form-container" class="card form-card elevated-form">{% include "finance/partials/pago_form.html" %}</div>
+{% endblock %}

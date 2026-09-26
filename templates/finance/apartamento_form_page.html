@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load formatting %}
+{% block title %}{% if modo == "crear" %}Agregar apartamento{% else %}Editar apartamento {{ apartamento.numero }}{% endif %} · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">{{ edificio.nombre }}</p>
+    <h1>{% if modo == "crear" %}Agregar apartamento{% else %}Editar apartamento {{ apartamento.numero }}{% endif %}</h1>
+    <p class="muted">Configura la cuota y la forma en que esta unidad participa en los gastos comunes.</p>
+  </div>
+  <a class="button button-secondary" href="{% url 'finance:apartamentos_lista' edificio.id %}">Volver a apartamentos</a>
+</div>
+
+<section class="card elevated-form apartment-editor-card">
+  {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-grid apartment-form-grid">
+      <div class="field-group{% if form.numero.errors %} field-has-error{% endif %}">
+        <label for="{{ form.numero.id_for_label }}">{{ form.numero.label }} <span class="required-mark">*</span></label>
+        {{ form.numero }}
+        <span class="helptext">{{ form.numero.help_text }}</span>
+        {% for error in form.numero.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field-group{% if form.cuota_mensual.errors %} field-has-error{% endif %}">
+        <label for="{{ form.cuota_mensual.id_for_label }}">{{ form.cuota_mensual.label }} <span class="required-mark">*</span></label>
+        <div class="money-field"><span aria-hidden="true">RD$</span>{{ form.cuota_mensual }}</div>
+        <span class="helptext">{{ form.cuota_mensual.help_text }}</span>
+        {% for error in form.cuota_mensual.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field-group{% if form.porcentaje_contribucion.errors %} field-has-error{% endif %}">
+        <label for="{{ form.porcentaje_contribucion.id_for_label }}">{{ form.porcentaje_contribucion.label }} <span class="required-mark">*</span></label>
+        {{ form.porcentaje_contribucion }}
+        <span class="helptext">{{ form.porcentaje_contribucion.help_text }}</span>
+        {% for error in form.porcentaje_contribucion.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </div>
+      <div class="field-group{% if form.peso_voto.errors %} field-has-error{% endif %}">
+        <label for="{{ form.peso_voto.id_for_label }}">{{ form.peso_voto.label }} <span class="required-mark">*</span></label>
+        {{ form.peso_voto }}
+        <span class="helptext">{{ form.peso_voto.help_text }}</span>
+        {% for error in form.peso_voto.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </div>
+    </div>
+    <div class="checkbox-field apartment-active-field{% if form.activo.errors %} field-has-error{% endif %}">
+      {{ form.activo }}
+      <div><label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label><span class="helptext">{{ form.activo.help_text }}</span></div>
+    </div>
+    <div class="form-actions"><button class="button" type="submit">{% if modo == "crear" %}Agregar apartamento{% else %}Guardar cambios{% endif %}</button><a class="button button-secondary" href="{% url 'finance:apartamentos_lista' edificio.id %}">Cancelar</a></div>
+  </form>
+</section>
+{% endblock %}

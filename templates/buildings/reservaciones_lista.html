@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Reservaciones · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Reservaciones de zonas</h1><p class="muted">Consulta los horarios ocupados sin exponer la información privada de otros residentes.</p></div>
+  <div class="actions">{% if zonas %}<a class="button" href="{% url 'buildings:reservacion_crear' edificio.id %}">+ Reservar zona</a>{% endif %}{% if puede_gestionar %}<a class="button button-secondary" href="{% url 'buildings:zona_crear' edificio.id %}">Administrar zonas</a>{% endif %}</div>
+</div>
+
+{% if zonas %}
+<section class="zone-grid" aria-label="Zonas disponibles">
+  {% for zona in zonas %}<article class="card zone-card{% if not zona.activo %} row-inactive{% endif %}"><div class="zone-card-icon" aria-hidden="true">⌂</div><div><div class="zone-card-title"><h2>{{ zona.nombre }}</h2>{% if not zona.activo %}<span class="status status-anulado">Inactiva</span>{% endif %}</div>{% if zona.ubicacion %}<p>{{ zona.ubicacion }}</p>{% endif %}<small>{{ zona.hora_apertura|time:"H:i" }}–{{ zona.hora_cierre|time:"H:i" }} · bloques de {{ zona.duracion_bloque_minutos }} min</small></div><div class="zone-card-actions">{% if zona.activo %}<a href="{% url 'buildings:reservacion_crear' edificio.id %}?zona={{ zona.id }}">Reservar</a>{% endif %}{% if puede_gestionar %}<a href="{% url 'buildings:zona_editar' edificio.id zona.id %}">Editar</a>{% endif %}</div></article>{% endfor %}
+</section>
+
+<section class="home-section"><div class="section-header"><div><h2>Próximos horarios ocupados</h2><p class="section-description">Se muestran los próximos 30 días.</p></div></div>
+  <form class="card filter-bar reservation-filters" method="get"><label>Fecha<input type="date" name="fecha" value="{{ fecha_filtro }}"></label><label>Zona<select name="zona"><option value="">Todas</option>{% for zona in zonas %}<option value="{{ zona.id }}" {% if zona_filtro == zona.id|stringformat:'s' %}selected{% endif %}>{{ zona.nombre }}</option>{% endfor %}</select></label><button class="button" type="submit">Filtrar</button>{% if fecha_filtro or zona_filtro %}<a href="{% url 'buildings:reservaciones_lista' edificio.id %}">Limpiar</a>{% endif %}</form>
+  <div class="card table-wrap mobile-cards"><table><thead><tr><th>Fecha</th><th>Zona o salón</th><th>Horario</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
+    {% for reserva in reservaciones %}<tr><td data-label="Fecha">{{ reserva.fecha|date:"d/m/Y" }}</td><td data-label="Zona"><strong>{{ reserva.zona.nombre }}</strong></td><td data-label="Horario">{{ reserva.hora_inicio|time:"H:i" }}–{{ reserva.hora_fin|time:"H:i" }}</td><td data-label="Estado">{% if reserva.usuario_id == user.id %}<span class="status status-confirmado">Tu reservación</span>{% else %}<span class="status">Ocupado</span>{% endif %}{% if puede_gestionar %}<small class="reservation-admin-detail">Reservó: {{ reserva.usuario.get_full_name|default:reserva.usuario.username }}{% if reserva.detalle_privado %} · {{ reserva.detalle_privado }}{% endif %}</small>{% elif reserva.usuario_id == user.id and reserva.detalle_privado %}<small class="reservation-admin-detail">{{ reserva.detalle_privado }}</small>{% endif %}</td><td data-label="Acción">{% if reserva.usuario_id == user.id or puede_gestionar %}<form method="post" action="{% url 'buildings:reservacion_cancelar' edificio.id reserva.id %}">{% csrf_token %}<button class="link-button danger-link" type="submit">Cancelar</button></form>{% else %}<span class="muted">No disponible</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="5"><div class="empty-state"><span class="empty-icon" aria-hidden="true">✓</span><strong>No hay horarios ocupados</strong><p>Puedes reservar cualquiera de los bloques disponibles.</p></div></td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% else %}<section class="card empty-state"><span class="empty-icon" aria-hidden="true">⌂</span><strong>Todavía no hay zonas reservables</strong><p>{% if puede_gestionar %}Crea la primera zona y define sus horarios.{% else %}La administración aún no ha configurado salones o áreas comunes.{% endif %}</p>{% if puede_gestionar %}<a class="button" href="{% url 'buildings:zona_crear' edificio.id %}">Crear primera zona</a>{% endif %}</section>{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Mis edificios · Mi Condominio{% endblock %}
+{% block content %}
+<section class="portal-welcome">
+  <div><p class="eyebrow">Bienvenido</p><h1>Hola, {% firstof user.first_name user.username %}</h1><p>Selecciona el edificio que deseas consultar.</p></div>
+  <span class="portal-welcome-mark" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M9 56V20L32 7l23 13v36M19 56V27h26v29M26 34h3M35 34h3M26 42h3M35 42h3M27 56v-7h10v7"/></svg></span>
+</section>
+<section class="home-section" aria-labelledby="edificios-title">
+  <div class="section-header"><div><h2 id="edificios-title">Mis edificios</h2><p class="section-description">{{ edificios|length }} asignado{{ edificios|length|pluralize }}</p></div></div>
+  <div class="building-grid">{% for edificio in edificios %}<a class="card building-card" href="{% url 'accounts:edificio_detalle' edificio.id %}"><span class="building-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 28V10l11-6 11 6v18M10 28V14h12v14M13 18h2M18 18h2M13 22h2M18 22h2M14 28v-3h4v3"/></svg></span><span class="building-card-copy"><strong>{{ edificio.nombre }}</strong><small>{{ edificio.direccion|truncatechars:80 }}</small></span><span class="building-card-arrow" aria-hidden="true">›</span></a>{% empty %}<div class="card empty-state"><span class="empty-icon" aria-hidden="true">⌂</span><strong>No tienes edificios asignados</strong><p>Solicita acceso a la administración de tu condominio.</p></div>{% endfor %}</div>
+</section>
+{% endblock %}

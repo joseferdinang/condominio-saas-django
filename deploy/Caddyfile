@@ -1,0 +1,39 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+	request_body {
+		max_size 6MB
+	}
+	header {
+		-Server
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy same-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+	log {
+		output stdout
+		format filter {
+			wrap json
+			fields {
+				request>uri delete
+				request>headers delete
+				resp_headers delete
+			}
+		}
+	}
+	handle_path /static/* {
+		root * /srv/static
+		file_server
+	}
+	# Uploaded files are accessible only through authorized Django views.
+	handle /media/* {
+		respond 404
+	}
+	handle {
+		reverse_proxy web:8000
+	}
+}

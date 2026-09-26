@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load formatting %}
+{% block title %}Reportes · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header report-page-header">
+  <div>
+    <p class="eyebrow">{{ edificio.nombre }}</p>
+    <h1>Reportes financieros</h1>
+    <p class="muted">Elige qué quieres revisar y descarga un archivo listo para compartir.</p>
+  </div>
+  <a class="button button-secondary" href="{% url 'accounts:edificio_detalle' edificio.id %}">Volver al resumen</a>
+</div>
+
+<div class="report-layout">
+  <section class="card elevated-form report-builder">
+    {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <form method="get" action="{% url 'finance:reporte_exportar' edificio.id %}">
+      <fieldset class="report-choice-group">
+        <legend><span class="panel-kicker">Paso 1</span><strong>¿Qué reporte necesitas?</strong><small>Todos los datos se limitan a {{ edificio.nombre }}.</small></legend>
+        <div class="report-type-grid">
+          {% for value, label in form.tipo.field.choices %}
+          <label class="report-type-option">
+            <input type="radio" name="tipo" value="{{ value }}" {% if form.tipo.value == value or not form.tipo.value and forloop.first %}checked{% endif %}>
+            <span class="report-type-icon" aria-hidden="true">{% if value == "estado_cuenta" %}▤{% elif value == "cuentas_cobrar" %}$ {% elif value == "cuotas_periodo" %}◷{% elif value == "gastos_categoria" %}▥{% elif value == "resumen_mensual" %}↗{% elif value == "movimientos_caja" %}⇄{% else %}!{% endif %}</span>
+            <span><strong>{{ label }}</strong><small>{% if value == "estado_cuenta" %}Detalle de una unidad{% elif value == "cuentas_cobrar" %}Saldos pendientes{% elif value == "cuotas_periodo" %}Cobrado y por cobrar{% elif value == "gastos_categoria" %}Distribución de egresos{% elif value == "resumen_mensual" %}Ingresos y gastos{% elif value == "movimientos_caja" %}Entradas y salidas{% else %}Comprobantes pendientes{% endif %}</small></span>
+          </label>
+          {% endfor %}
+        </div>
+        {% for error in form.tipo.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+      </fieldset>
+
+      <fieldset class="report-scope-group">
+        <legend><span class="panel-kicker">Paso 2</span><strong>Define el período y el alcance</strong></legend>
+        <div class="form-grid report-filter-grid">
+          <div class="field-group{% if form.apartamento.errors %} field-has-error{% endif %}"><label for="{{ form.apartamento.id_for_label }}">Apartamento <span class="optional-label">Opcional</span></label>{{ form.apartamento }}<span class="helptext">Úsalo para el estado de cuenta individual.</span>{% for error in form.apartamento.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>
+          <div class="field-group{% if form.periodo.errors %} field-has-error{% endif %}"><label for="{{ form.periodo.id_for_label }}">Período de cuota <span class="optional-label">Opcional</span></label>{{ form.periodo }}<span class="helptext">Los períodos aparecen con el mes completo.</span>{% for error in form.periodo.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>
+          <div class="field-group{% if form.fecha_desde.errors %} field-has-error{% endif %}"><label for="{{ form.fecha_desde.id_for_label }}">Desde</label>{{ form.fecha_desde }}{% for error in form.fecha_desde.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>
+          <div class="field-group{% if form.fecha_hasta.errors %} field-has-error{% endif %}"><label for="{{ form.fecha_hasta.id_for_label }}">Hasta</label>{{ form.fecha_hasta }}{% for error in form.fecha_hasta.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>
+        </div>
+      </fieldset>
+
+      <fieldset class="format-choice-group">
+        <legend><span class="panel-kicker">Paso 3</span><strong>Elige el formato</strong></legend>
+        <div class="format-choice-grid">
+          <label class="format-option"><input type="radio" name="formato" value="xlsx" {% if form.formato.value != "pdf" %}checked{% endif %}><span><strong>Excel</strong><small>.xlsx para trabajar los datos</small></span></label>
+          <label class="format-option"><input type="radio" name="formato" value="pdf" {% if form.formato.value == "pdf" %}checked{% endif %}><span><strong>PDF</strong><small>Presentación lista para enviar</small></span></label>
+        </div>
+      </fieldset>
+
+      <div class="report-submit-row"><p class="muted"><strong>Incluye:</strong> fecha de generación, período consultado y totales conciliados.</p><button class="button button-accent" type="submit">Generar reporte <span aria-hidden="true">→</span></button></div>
+    </form>
+  </section>
+
+  <aside class="report-side-panel">
+    <section class="card report-summary-card"><span class="report-summary-icon" aria-hidden="true">✓</span><h2>Datos protegidos</h2><p>Solo se incluirá información del edificio autorizado para tu cuenta.</p><div class="report-summary-line"><span>Moneda</span><strong>RD$ · DOP</strong></div><div class="report-summary-line"><span>Zona horaria</span><strong>America/Santo_Domingo</strong></div></section>
+    <section class="card report-help-card"><span class="panel-kicker">Guía rápida</span><h2>¿Cuál elegir?</h2><ul class="report-help-list"><li><strong>Estado de cuenta</strong><span>Una unidad específica.</span></li><li><strong>Cuentas por cobrar</strong><span>Quiénes tienen saldo pendiente.</span></li><li><strong>Resumen mensual</strong><span>La fotografía financiera del mes.</span></li><li><strong>Movimientos de caja</strong><span>Ingresos y egresos registrados.</span></li></ul></section>
+  </aside>
+</div>
+{% endblock %}

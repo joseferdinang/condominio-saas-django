@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Reservar zona · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Reservar una zona</h1><p class="muted">Elige una fecha y uno de los horarios establecidos por la administración.</p></div>
+  <a class="button button-secondary" href="{% url 'buildings:reservaciones_lista' edificio.id %}">Volver</a>
+</div>
+<section class="card elevated-form reservation-form-card">
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">
+      {% include "includes/form_field.html" with field=form.zona %}
+      {% include "includes/form_field.html" with field=form.fecha %}
+      {% include "includes/form_field.html" with field=form.hora_inicio %}
+      {% include "includes/form_field.html" with field=form.detalle_privado %}
+    </div>
+    <div class="privacy-note"><span aria-hidden="true">◉</span><div><strong>Reservación privada</strong><p>Los demás residentes solo verán el salón y el horario ocupado.</p></div></div>
+    <div class="form-actions"><button class="button" type="submit">Confirmar reservación</button><a class="button button-secondary" href="{% url 'buildings:reservaciones_lista' edificio.id %}">Cancelar</a></div>
+  </form>
+</section>
+{% endblock %}

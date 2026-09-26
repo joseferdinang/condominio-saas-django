@@ -1,0 +1,7 @@
+Hola {{ usuario.get_full_name|default:usuario.username }},
+
+Tienes acceso al edificio {{ edificio.nombre }} en el portal de condominios.
+{% if cuenta_nueva %}Establece tu contraseña en este enlace:{% else %}Inicia sesión en este enlace:{% endif %}
+{{ url }}
+
+Si no esperabas esta invitación, comunícate con la administración del edificio.

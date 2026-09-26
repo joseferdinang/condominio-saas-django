@@ -1,0 +1,8 @@
+# /etc/cron.d/condominio -- install manually after editing building/user values.
+# Host timezone: America/Santo_Domingo. These jobs share the operation lock.
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+# Daily check generates the current month once; subsequent runs/retries create 0 duplicates.
+5 2 * * * root cd /opt/condominio && /usr/bin/python3 ops/production.py cuotas --edificio 1 --usuario USUARIO_FINANCIERO --dia-vencimiento 10 >> /var/log/condominio-cuotas.log 2>&1
+10 3 * * * root cd /opt/condominio && /usr/bin/python3 ops/production.py backup >> /var/log/condominio-backup.log 2>&1

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load formatting %}
+{% block title %}Revisar pago #{{ pago.id }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }} · Apto. {{ pago.apartamento.numero }}</p><h1>Revisar pago #{{ pago.id }}</h1><p class="muted">Compara el comprobante y distribuye exactamente el importe reportado.</p></div><a class="button button-secondary" href="{% url 'accounts:edificio_detalle' edificio.id %}">Volver al resumen</a></div>
+<section class="stats-grid">
+  <article class="card metric-card metric-primary"><span class="metric-label">Importe reportado</span><strong class="metric-value">{{ pago.importe_total|dop }}</strong></article>
+  <article class="card"><span class="metric-label">Fecha</span><strong class="metric-value">{{ pago.fecha|date:"d/m/Y" }}</strong></article>
+  <article class="card"><span class="metric-label">Método</span><strong class="metric-value">{{ pago.get_metodo_display }}</strong></article>
+  <article class="card"><span class="metric-label">Referencia</span><strong class="metric-value">{{ pago.referencia|default:"Sin referencia" }}</strong></article>
+</section>
+<div class="grid review-grid">
+  <section class="card proof-panel">
+    <h2>Comprobante</h2>
+    <div class="proof-box">{% if pago.comprobante %}<p>Archivo enviado por {{ pago.registrado_por.get_full_name|default:pago.registrado_por.username }}.</p><a class="button button-secondary" href="{% url 'finance:pago_comprobante' edificio.id pago.id %}" target="_blank" rel="noopener">Abrir comprobante</a>{% else %}<p class="muted">Este pago fue registrado sin comprobante.</p>{% endif %}</div>
+  </section>
+  <section id="revision-container" class="card review-panel">{% include "finance/partials/revision_forms.html" %}</section>
+</div>
+{% endblock %}

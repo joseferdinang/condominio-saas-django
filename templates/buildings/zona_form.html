@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{% if modo == 'crear' %}Nueva zona{% else %}Editar {{ zona.nombre }}{% endif %} · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>{% if modo == 'crear' %}Crear zona reservable{% else %}Editar {{ zona.nombre }}{% endif %}</h1><p class="muted">Define el horario y la duración fija de cada bloque.</p></div><a class="button button-secondary" href="{% url 'buildings:reservaciones_lista' edificio.id %}">Volver</a></div>
+<section class="card elevated-form reservation-form-card">
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="form-grid">
+      <div class="full">{% include "includes/form_field.html" with field=form.nombre %}</div>
+      {% include "includes/form_field.html" with field=form.ubicacion %}
+      {% include "includes/form_field.html" with field=form.duracion_bloque_minutos %}
+      <div class="full">{% include "includes/form_field.html" with field=form.descripcion %}</div>
+      {% include "includes/form_field.html" with field=form.hora_apertura %}
+      {% include "includes/form_field.html" with field=form.hora_cierre %}
+      <div class="full checkbox-field apartment-active-field">{{ form.activo }}<div><label for="{{ form.activo.id_for_label }}">{{ form.activo.label }}</label><span class="helptext">{{ form.activo.help_text }}</span></div></div>
+    </div>
+    <div class="form-actions"><button class="button" type="submit">{% if modo == 'crear' %}Crear zona{% else %}Guardar cambios{% endif %}</button><a class="button button-secondary" href="{% url 'buildings:reservaciones_lista' edificio.id %}">Cancelar</a></div>
+  </form>
+</section>
+{% endblock %}
