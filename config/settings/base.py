@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -36,6 +37,58 @@ def env_secret(name: str, default: str = "") -> str:
         except OSError as exc:
             raise ImproperlyConfigured(f"No se pudo leer {name}_FILE.") from exc
     return os.getenv(name, default)
+
+
+def postgres_database_config() -> dict[str, object]:
+    """Read Neon-style PostgreSQL URLs or the existing Compose variables."""
+    database_url = os.getenv("DATABASE_URL")
+    connection_options: dict[str, object] = {
+        "connect_timeout": env_int("POSTGRES_CONNECT_TIMEOUT", 5),
+    }
+
+    if database_url:
+        try:
+            parsed = urlsplit(database_url)
+            host = parsed.hostname
+            port = parsed.port
+        except ValueError as exc:
+            raise ImproperlyConfigured("DATABASE_URL no tiene un formato PostgreSQL válido.") from exc
+        if parsed.scheme not in {"postgres", "postgresql"}:
+            raise ImproperlyConfigured("DATABASE_URL debe usar el esquema PostgreSQL.")
+        if not host or not parsed.path.strip("/") or not parsed.username:
+            raise ImproperlyConfigured(
+                "DATABASE_URL debe incluir usuario, host y nombre de base de datos."
+            )
+
+        query = parse_qs(parsed.query)
+        sslmode = query.get("sslmode", ["require"])[-1]
+        if sslmode not in {"require", "verify-ca", "verify-full"}:
+            raise ImproperlyConfigured("DATABASE_URL debe exigir una conexión PostgreSQL cifrada.")
+        connection_options["sslmode"] = sslmode
+        if "channel_binding" in query:
+            connection_options["channel_binding"] = query["channel_binding"][-1]
+
+        return {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": unquote(parsed.path.lstrip("/")),
+            "USER": unquote(parsed.username or ""),
+            "PASSWORD": unquote(parsed.password or ""),
+            "HOST": host,
+            "PORT": str(port or 5432),
+            "CONN_MAX_AGE": env_int("POSTGRES_CONN_MAX_AGE", 0),
+            "OPTIONS": connection_options,
+        }
+
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("POSTGRES_DB", "condominio"),
+        "USER": os.getenv("POSTGRES_USER", "condominio"),
+        "PASSWORD": env_secret("POSTGRES_PASSWORD", "condominio_dev"),
+        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        "CONN_MAX_AGE": env_int("POSTGRES_CONN_MAX_AGE", 0),
+        "OPTIONS": connection_options,
+    }
 
 
 SECRET_KEY = os.getenv(
@@ -91,20 +144,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "condominio"),
-        "USER": os.getenv("POSTGRES_USER", "condominio"),
-        "PASSWORD": env_secret("POSTGRES_PASSWORD", "condominio_dev"),
-        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-        "PORT": os.getenv("POSTGRES_PORT", "5432"),
-        "CONN_MAX_AGE": env_int("POSTGRES_CONN_MAX_AGE", 0),
-        "OPTIONS": {
-            "connect_timeout": env_int("POSTGRES_CONNECT_TIMEOUT", 5),
-        },
-    }
-}
+DATABASES = {"default": postgres_database_config()}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
