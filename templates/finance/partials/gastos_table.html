@@ -1,3 +1,28 @@
 {% load formatting %}
-<div class="results-toolbar"><span><strong>{{ gastos|length }}</strong> gasto{{ gastos|length|pluralize }}</span></div>
-<div class="card table-wrap mobile-cards"><table><thead><tr><th>Fecha</th><th>Categoría</th><th>Concepto</th><th>Proveedor</th><th>Importe</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{% for gasto in gastos %}<tr><td data-label="Fecha">{{ gasto.fecha|date:"d/m/Y" }}</td><td data-label="Categoría">{{ gasto.get_categoria_display }}</td><td data-label="Concepto"><strong>{{ gasto.concepto }}</strong></td><td data-label="Proveedor">{{ gasto.proveedor|default:"—" }}</td><td data-label="Importe" class="amount">{{ gasto.importe|dop }}</td><td data-label="Estado"><span class="status status-{{ gasto.estado|lower }}">{{ gasto.get_estado_display }}</span></td><td data-label="Acción" class="table-action">{% if gasto.comprobante %}<a href="{% url 'finance:gasto_comprobante' edificio.id gasto.id %}" target="_blank" rel="noopener">Comprobante</a>{% endif %}{% if puede_registrar and gasto.estado == 'PENDIENTE' %}<form method="post" action="{% url 'finance:gasto_confirmar' edificio.id gasto.id %}" hx-post="{% url 'finance:gasto_confirmar' edificio.id gasto.id %}" hx-indicator=".global-progress" hx-disabled-elt="button">{% csrf_token %}<button class="link-button" type="submit">Confirmar</button></form>{% endif %}</td></tr>{% empty %}<tr><td colspan="7" class="empty-state"><span class="empty-icon" aria-hidden="true">⌕</span><strong>No hay gastos con estos filtros</strong></td></tr>{% endfor %}</tbody></table></div>
+<div class="results-summary">
+  <div class="results-toolbar"><strong>{{ gastos|length }}</strong><span>gasto{{ gastos|length|pluralize }} encontrado{{ gastos|length|pluralize }}</span></div>
+  {% if periodo_seleccionado or estado_seleccionado %}
+  <div class="active-filters" aria-label="Filtros activos">
+    <span class="active-filters-label">Filtros activos</span>
+    {% if periodo_seleccionado %}{% for periodo in periodos %}{% with valor=periodo|periodo_valor %}{% if periodo_seleccionado == valor %}<span class="filter-chip">{{ periodo.mes|mes_nombre }} {{ periodo.anio }}</span>{% endif %}{% endwith %}{% endfor %}{% endif %}
+    {% for valor, etiqueta in estados %}{% if estado_seleccionado == valor %}<span class="filter-chip">{{ etiqueta }}</span>{% endif %}{% endfor %}
+    <a class="filter-reset" href="{% url 'finance:gastos_lista' edificio.id %}">Quitar filtros</a>
+  </div>
+  {% endif %}
+</div>
+<div class="card table-wrap mobile-cards"><table><thead><tr><th>Fecha</th><th>Categoría</th><th>Concepto</th><th>Proveedor</th><th>Importe</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
+  {% for gasto in gastos %}
+  <tr>
+    <td data-label="Fecha">{{ gasto.fecha|date:"d/m/Y" }}</td>
+    <td data-label="Categoría">{{ gasto.get_categoria_display }}</td>
+    <td data-label="Concepto"><strong>{{ gasto.concepto }}</strong></td>
+    <td data-label="Proveedor">{{ gasto.proveedor|default:"—" }}</td>
+    <td data-label="Importe" class="amount">{{ gasto.importe|dop }}</td>
+    <td data-label="Estado"><span class="status status-{{ gasto.estado|lower }}">{{ gasto.get_estado_display }}</span></td>
+    <td data-label="Acción" class="table-action">
+      {% if gasto.comprobante %}<a href="{% url 'finance:gasto_comprobante' edificio.id gasto.id %}" target="_blank" rel="noopener">Comprobante</a>{% endif %}
+      {% if puede_registrar and gasto.estado == 'PENDIENTE' %}<form method="post" action="{% url 'finance:gasto_confirmar' edificio.id gasto.id %}" hx-post="{% url 'finance:gasto_confirmar' edificio.id gasto.id %}" hx-indicator=".global-progress" hx-disabled-elt="button">{% csrf_token %}<button class="link-button" type="submit">Confirmar</button></form>{% endif %}
+    </td>
+  </tr>
+  {% empty %}<tr><td colspan="7" class="empty-state"><span class="empty-icon" aria-hidden="true">⌕</span><strong>No hay gastos con estos filtros</strong><p>Prueba con otro período o estado.</p></td></tr>{% endfor %}
+</tbody></table></div>

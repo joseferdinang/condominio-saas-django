@@ -1,6 +1,7 @@
 <form method="post" enctype="multipart/form-data" hx-post="{% url 'finance:pago_registrar' edificio.id apartamento.id %}" hx-target="#pago-form-container" hx-encoding="multipart/form-data" hx-indicator=".global-progress" hx-disabled-elt="button">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-intro"><span class="form-intro-mark" aria-hidden="true">RD$</span><div class="form-intro-copy"><strong>Datos del pago</strong><span>Completa el importe, la fecha y el método utilizado.</span></div></div>
   <div class="form-grid">
     {% include "includes/form_field.html" with field=form.importe_total %}
     {% include "includes/form_field.html" with field=form.fecha %}

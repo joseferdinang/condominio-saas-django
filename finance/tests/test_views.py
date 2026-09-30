@@ -177,6 +177,22 @@ class PortalFinancieroViewTests(TestCase):
         self.assertContains(response, "A-1")
         self.assertNotContains(response, "A-2")
 
+    def test_filtros_de_apartamentos_funcionan_sin_htmx_y_muestran_chips(self):
+        self.client.force_login(self.administrador)
+
+        response = self.client.get(
+            reverse("finance:apartamentos_lista", args=[self.edificio.pk]),
+            {"q": "A-1", "periodo": self.periodo.pk, "estado": "PENDIENTE"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Filtros activos")
+        self.assertContains(response, "Unidad: A-1")
+        self.assertContains(response, "Septiembre 2026")
+        self.assertContains(response, "Pendiente")
+        self.assertContains(response, "Quitar filtros")
+        self.assertContains(response, "<html", html=False)
+
     def test_residente_no_puede_abrir_otro_apartamento(self):
         self.client.force_login(self.residente)
 
@@ -236,6 +252,27 @@ class PortalFinancieroViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFormError(response.context["form"], "comprobante", "Este campo es obligatorio.")
         self.assertFalse(Pago.objects.exists())
+
+    def test_formulario_htmx_conserva_errores_de_validacion(self):
+        self.client.force_login(self.residente)
+
+        response = self.client.post(
+            reverse(
+                "finance:pago_registrar",
+                args=[self.edificio.pk, self.apartamento.pk],
+            ),
+            {
+                "importe_total": "400.00",
+                "fecha": "2026-09-15",
+                "metodo": Pago.Metodo.TRANSFERENCIA,
+            },
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "finance/partials/pago_form.html")
+        self.assertContains(response, "Este campo es obligatorio.")
+        self.assertNotContains(response, "<html", html=False)
 
     def test_comprobante_con_contenido_invalido_es_rechazado(self):
         self.client.force_login(self.residente)
@@ -467,6 +504,8 @@ class PortalFinancieroViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "finance/partials/gastos_table.html")
         self.assertContains(response, "Gasto pendiente visible")
+        self.assertContains(response, "Filtros activos")
+        self.assertContains(response, "Pendiente")
         self.assertNotContains(response, "<html", html=False)
 
     def test_recibo_de_otro_apartamento_no_es_visible_para_residente(self):

@@ -1,3 +1,28 @@
 {% load formatting %}
-<div class="results-toolbar"><span><strong>{{ filas|length }}</strong> resultado{{ filas|length|pluralize }}</span></div>
-<div class="card table-wrap mobile-cards"><table><thead><tr><th>Apartamento</th><th>Cuota mensual</th><th>Saldo</th><th>Estado</th><th>Acción</th></tr></thead><tbody>{% for fila in filas %}<tr{% if not fila.apartamento.activo %} class="row-inactive"{% endif %}><td data-label="Apartamento"><strong>{{ fila.apartamento.numero }}</strong></td><td data-label="Cuota mensual">{{ fila.apartamento.cuota_mensual|dop }}</td><td data-label="Saldo" class="amount">{{ fila.saldo|dop }}</td><td data-label="Estado">{% if not fila.apartamento.activo %}<span class="status status-inactivo">Inactivo</span>{% else %}<span class="status status-{{ fila.estado|lower }}">{% if fila.estado == 'AL_DIA' %}Al día{% else %}Pendiente{% endif %}</span>{% endif %}</td><td data-label="Acción" class="table-action">{% if fila.apartamento.activo %}<a href="{% url 'accounts:apartamento_detalle' edificio.id fila.apartamento.id %}">Ver detalle →</a>{% endif %}{% if puede_gestionar %}<a href="{% url 'finance:apartamento_editar' edificio.id fila.apartamento.id %}">Editar</a><form method="post" action="{% url 'finance:apartamento_cambiar_estado' edificio.id fila.apartamento.id %}">{% csrf_token %}<button class="link-button" type="submit">{% if fila.apartamento.activo %}Desactivar{% else %}Activar{% endif %}</button></form>{% endif %}</td></tr>{% empty %}<tr><td colspan="5" class="empty-state"><span class="empty-icon" aria-hidden="true">⌕</span><strong>Sin resultados</strong><p>Prueba con otros filtros o limpia la búsqueda.</p></td></tr>{% endfor %}</tbody></table></div>
+<div class="results-summary">
+  <div class="results-toolbar"><strong>{{ filas|length }}</strong><span>apartamento{{ filas|length|pluralize }} encontrado{{ filas|length|pluralize }}</span></div>
+  {% if busqueda or periodo_seleccionado or estado_seleccionado or incluir_inactivos %}
+  <div class="active-filters" aria-label="Filtros activos">
+    <span class="active-filters-label">Filtros activos</span>
+    {% if busqueda %}<span class="filter-chip">Unidad: {{ busqueda }}</span>{% endif %}
+    {% if periodo_seleccionado %}{% for periodo in periodos %}{% if periodo_seleccionado == periodo.id|stringformat:'s' %}<span class="filter-chip">{{ periodo.mes|mes_nombre }} {{ periodo.anio }}</span>{% endif %}{% endfor %}{% endif %}
+    {% if estado_seleccionado == 'AL_DIA' %}<span class="filter-chip">Al día</span>{% elif estado_seleccionado == 'PENDIENTE' %}<span class="filter-chip">Pendiente</span>{% endif %}
+    {% if incluir_inactivos %}<span class="filter-chip">Incluye inactivos</span>{% endif %}
+    <a class="filter-reset" href="{% url 'finance:apartamentos_lista' edificio.id %}">Quitar filtros</a>
+  </div>
+  {% endif %}
+</div>
+<div class="card table-wrap mobile-cards"><table><thead><tr><th>Apartamento</th><th>Cuota mensual</th><th>Saldo</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
+  {% for fila in filas %}
+  <tr{% if not fila.apartamento.activo %} class="row-inactive"{% endif %}>
+    <td data-label="Apartamento"><strong>{{ fila.apartamento.numero }}</strong></td>
+    <td data-label="Cuota mensual">{{ fila.apartamento.cuota_mensual|dop }}</td>
+    <td data-label="Saldo" class="amount">{{ fila.saldo|dop }}</td>
+    <td data-label="Estado">{% if not fila.apartamento.activo %}<span class="status status-inactivo">Inactivo</span>{% else %}<span class="status status-{{ fila.estado|lower }}">{% if fila.estado == 'AL_DIA' %}Al día{% else %}Pendiente{% endif %}</span>{% endif %}</td>
+    <td data-label="Acción" class="table-action">
+      {% if fila.apartamento.activo %}<a href="{% url 'accounts:apartamento_detalle' edificio.id fila.apartamento.id %}">Ver detalle →</a>{% endif %}
+      {% if puede_gestionar %}<a href="{% url 'finance:apartamento_editar' edificio.id fila.apartamento.id %}">Editar</a><form method="post" action="{% url 'finance:apartamento_cambiar_estado' edificio.id fila.apartamento.id %}">{% csrf_token %}<button class="link-button" type="submit">{% if fila.apartamento.activo %}Desactivar{% else %}Activar{% endif %}</button></form>{% endif %}
+    </td>
+  </tr>
+  {% empty %}<tr><td colspan="5" class="empty-state"><span class="empty-icon" aria-hidden="true">⌕</span><strong>Sin resultados</strong><p>Prueba con otros filtros o quita los filtros activos.</p></td></tr>{% endfor %}
+</tbody></table></div>
