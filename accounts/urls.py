@@ -80,4 +80,24 @@ urlpatterns = [
         views.invitar_usuario,
         name="invitar_usuario",
     ),
+    path(
+        "edificios/<int:edificio_id>/usuarios/",
+        views.usuarios_lista,
+        name="usuarios_lista",
+    ),
+    path(
+        "edificios/<int:edificio_id>/usuarios/<int:membresia_id>/editar/",
+        views.usuario_editar,
+        name="usuario_editar",
+    ),
+    path(
+        "edificios/<int:edificio_id>/usuarios/<int:membresia_id>/retirar/",
+        views.usuario_retirar,
+        name="usuario_retirar",
+    ),
+    path(
+        "edificios/<int:edificio_id>/cambios/",
+        views.cambios_lista,
+        name="cambios_lista",
+    ),
 ]

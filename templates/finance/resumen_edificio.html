@@ -60,7 +60,7 @@
   <a href="{% url 'buildings:reservaciones_lista' edificio.id %}"><span aria-hidden="true">▣</span><strong>Reservaciones</strong><small>Zonas y horarios</small></a>
   {% if puede_gestionar_finanzas %}<a href="{% url 'finance:gasto_registrar' edificio.id %}"><span aria-hidden="true">＋</span><strong>Registrar gasto</strong><small>Guardar un movimiento</small></a>{% endif %}
   <a href="{% url 'finance:reportes_index' edificio.id %}"><span aria-hidden="true">↧</span><strong>Generar reporte</strong><small>Excel o PDF</small></a>
-  {% if puede_gestionar_usuarios %}<a href="{% url 'accounts:invitar_usuario' edificio.id %}"><span aria-hidden="true">♙</span><strong>Invitar usuario</strong><small>Asignar acceso y rol</small></a>{% endif %}
+  {% if puede_gestionar_usuarios %}<a href="{% url 'accounts:usuarios_lista' edificio.id %}"><span aria-hidden="true">♙</span><strong>Usuarios</strong><small>Accesos y roles del edificio</small></a>{% endif %}
 </section>
 
 <div class="grid dashboard-grid">

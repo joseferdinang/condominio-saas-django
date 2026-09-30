@@ -1122,6 +1122,17 @@ input[type="file"]::file-selector-button { margin-right: .7rem; padding: .45rem 
 }
 
 /* Dark theme keeps all operational screens readable, including forms and tables. */
+.user-search { display: grid; gap: .55rem; }
+.user-search > div { display: flex; gap: .6rem; }
+.user-search input, .user-search select { flex: 1; min-width: 0; }
+.user-handle { display: block; margin-top: .15rem; color: var(--muted); }
+.status-pill { display: inline-flex; padding: .25rem .65rem; border-radius: 999px; background: var(--accent); color: var(--success); font-size: .78rem; font-weight: 700; }
+.status-muted { background: var(--bg); color: var(--muted); }
+.text-danger { color: var(--danger); }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 1.2rem 0; font-size: .85rem; }
+.pagination a { font-weight: 700; }
+@media (max-width: 600px) { .user-search > div { flex-direction: column; } }
+
 html[data-theme="oscuro"] .top-bar,
 html[data-theme="oscuro"] .building-switcher-menu,
 html[data-theme="oscuro"] .button-secondary,

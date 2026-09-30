@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Retirar acceso · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Retirar acceso</h1></div><a class="button button-secondary" href="{% url 'accounts:usuarios_lista' edificio.id %}">Volver</a></div>
+<section class="card form-card elevated-form"><p>¿Retirar el acceso de <strong>{{ membresia.usuario.get_full_name|default:membresia.usuario.username }}</strong> a {{ edificio.nombre }}?</p><p class="muted">La cuenta, sus movimientos y el historial de cambios se conservarán. Si pertenece a otro edificio, seguirá teniendo acceso allí.</p><form method="post">{% csrf_token %}<div class="form-actions"><button class="button button-danger" type="submit">Sí, retirar acceso</button><a class="button button-secondary" href="{% url 'accounts:usuarios_lista' edificio.id %}">Cancelar</a></div></form></section>
+{% endblock %}

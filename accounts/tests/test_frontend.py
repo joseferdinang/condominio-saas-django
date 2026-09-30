@@ -133,7 +133,7 @@ class FrontendPorRolTests(TestCase):
 
         self.assertContains(response, "Registrar gasto")
         self.assertContains(response, "Generar reporte")
-        self.assertContains(response, "Invitar usuario")
+        self.assertContains(response, "Usuarios")
         self.assertContains(response, self.otro_edificio.nombre)
 
 

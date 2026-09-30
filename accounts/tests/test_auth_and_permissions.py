@@ -353,6 +353,66 @@ class ControlledInvitationTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("/cuentas/contrasena/restablecer/", mail.outbox[0].body)
 
+    def test_fallo_smtp_no_deja_usuario_ni_membresia_y_muestra_error(self):
+        from unittest.mock import patch
+
+        datos = {
+            "username": "sin-correo",
+            "email": "sin-correo@example.test",
+            "rol": UsuarioEdificio.Rol.RESIDENTE,
+        }
+        with patch("accounts.views.send_mail", side_effect=OSError("SMTP no disponible")):
+            response = self.client.post(
+                reverse("accounts:invitar_usuario", args=[self.edificio.pk]), datos
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No se pudo enviar el correo")
+        self.assertFalse(get_user_model().objects.filter(username="sin-correo").exists())
+
+    def test_puede_reenviar_invitacion_creada_antes_del_fallo_smtp(self):
+        usuario = get_user_model().objects.create_user(
+            username="invitado-previo", email="previo@example.test", password="clave-temporal"
+        )
+        UsuarioEdificio.objects.create(
+            usuario=usuario, edificio=self.edificio, rol=UsuarioEdificio.Rol.RESIDENTE
+        )
+        response = self.client.post(
+            reverse("accounts:invitar_usuario", args=[self.edificio.pk]),
+            {
+                "username": "invitado-previo",
+                "email": "previo@example.test",
+                "rol": UsuarioEdificio.Rol.RESIDENTE,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(UsuarioEdificio.objects.filter(usuario=usuario, edificio=self.edificio).count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("/cuentas/contrasena/restablecer/", mail.outbox[0].body)
+
+    def test_no_reinvita_usuario_que_ya_entro_al_portal(self):
+        usuario = get_user_model().objects.create_user(
+            username="usuario-activo", email="activo@example.test", password="clave-temporal"
+        )
+        usuario.last_login = timezone.now()
+        usuario.save(update_fields=["last_login"])
+        UsuarioEdificio.objects.create(
+            usuario=usuario, edificio=self.edificio, rol=UsuarioEdificio.Rol.RESIDENTE
+        )
+        response = self.client.post(
+            reverse("accounts:invitar_usuario", args=[self.edificio.pk]),
+            {
+                "username": "usuario-activo",
+                "email": "activo@example.test",
+                "rol": UsuarioEdificio.Rol.RESIDENTE,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ese usuario ya pertenece a este edificio")
+        self.assertEqual(len(mail.outbox), 0)
+
     def test_administrador_de_edificio_no_puede_crear_otro_administrador(self):
         response = self.client.post(
             reverse("accounts:invitar_usuario", args=[self.edificio.pk]),

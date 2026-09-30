@@ -91,5 +91,5 @@ class PreferenciaVisualTests(TestCase):
         self.assertContains(response, 'data-palette="esmeralda"')
         self.assertContains(response, "Modo claro")
         self.assertContains(response, "Colores del portal")
-        self.assertContains(response, "css/app.css?v=20260921.1")
+        self.assertContains(response, "css/app.css?v=20260926.1")
         self.assertContains(response, "js/theme.js?v=20260920.2")
