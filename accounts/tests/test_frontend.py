@@ -135,6 +135,8 @@ class FrontendPorRolTests(TestCase):
         self.assertContains(response, "Generar reporte")
         self.assertContains(response, "Usuarios")
         self.assertContains(response, self.otro_edificio.nombre)
+        self.assertContains(response, 'role="progressbar"')
+        self.assertContains(response, "metric-cleared")
 
 
 class FormatoMonedaTests(TestCase):

@@ -927,6 +927,15 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .metric-card.metric-primary { color: #fff; border-color: transparent; background: var(--brand-dark); }
 .metric-card.metric-primary .metric-label, .metric-card.metric-primary .metric-note { color: rgba(255,255,255,.72); }
 .metric-card.metric-primary .metric-icon { color: #fff; background: rgba(255,255,255,.15); }
+.metric-card.metric-attention { border-color: #e7d4a7; background: #fff9e9; }
+.metric-card.metric-attention .metric-icon { background: #f6c868; color: #573500; }
+.metric-card.metric-cleared { border-color: #cfe2d5; background: #f0f7f1; }
+.metric-card.metric-cleared .metric-icon { background: #dcefe2; color: #17613c; }
+.metric-card.metric-expense { border-top: 3px solid #c7868a; }
+.metric-card.metric-occupancy { border-top: 3px solid #6eaa83; }
+.metric-card .progress-track { overflow: hidden; }
+.metric-card .progress-track[role="progressbar"] { outline-offset: 3px; }
+.metric-card .progress-track[aria-valuenow="0"] span { width: 0 !important; }
 .metric-icon-warning { background: #fff0d1 !important; color: var(--warning) !important; }
 .metric-icon-danger { background: #fde4e4 !important; color: var(--danger) !important; }
 .metric-icon-success { background: var(--accent) !important; color: var(--success) !important; }
@@ -1213,6 +1222,10 @@ html[data-theme="oscuro"] .feature-icon-amber,
 html[data-theme="oscuro"] .metric-icon-warning { background: #3a301d !important; color: #f2c66d !important; }
 html[data-theme="oscuro"] .metric-icon-danger { background: #412427 !important; color: #ff9b9b !important; }
 html[data-theme="oscuro"] .metric-icon-success { background: #163729 !important; color: #8cdeb0 !important; }
+html[data-theme="oscuro"] .metric-card.metric-attention { border-color: #66532d; background: #282315; }
+html[data-theme="oscuro"] .metric-card.metric-cleared { border-color: #23583d; background: #15271f; }
+html[data-theme="oscuro"] .metric-card.metric-expense { border-top-color: #a35c64; }
+html[data-theme="oscuro"] .metric-card.metric-occupancy { border-top-color: #43865c; }
 html[data-theme="oscuro"] .status-confirmado,
 html[data-theme="oscuro"] .status-pagado,
 html[data-theme="oscuro"] .status-al_dia,
