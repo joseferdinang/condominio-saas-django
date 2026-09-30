@@ -15,6 +15,7 @@
   {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
   <form method="post">
     {% csrf_token %}
+    <div class="form-intro"><span class="form-intro-mark" aria-hidden="true">01</span><div class="form-intro-copy"><strong>Información de la unidad</strong><span>Define el número, la cuota y las participaciones de este apartamento.</span></div></div>
     <div class="form-grid apartment-form-grid">
       <div class="field-group{% if form.numero.errors %} field-has-error{% endif %}">
         <label for="{{ form.numero.id_for_label }}">{{ form.numero.label }} <span class="required-mark">*</span></label>

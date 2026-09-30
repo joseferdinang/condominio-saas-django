@@ -9,7 +9,8 @@ from django.utils import timezone
 
 from accounts.models import UsuarioEdificio
 from buildings.models import Apartamento, Edificio
-from finance.models import Cargo, PeriodoCuota
+from finance.models import Cargo, Pago, PeriodoCuota
+from finance.services import confirmar_pago, registrar_pago
 from people.models import Persona, RelacionApartamento
 
 
@@ -78,7 +79,7 @@ class FrontendPorRolTests(TestCase):
             ),
             creado_por=self.admin,
         )
-        Cargo.objects.create(
+        self.cargo = Cargo.objects.create(
             apartamento=self.apartamento,
             periodo=periodo,
             tipo=Cargo.Tipo.CUOTA_MENSUAL,
@@ -99,7 +100,81 @@ class FrontendPorRolTests(TestCase):
         self.assertContains(response, "Hola, María")
         self.assertContains(response, "RD$ 4,000.00")
         self.assertContains(response, "Reportar pago")
+        self.assertContains(response, "Cargos pendientes")
+        self.assertContains(response, "Cuota mensual")
+        self.assertContains(response, "Pagos registrados")
+        self.assertContains(response, "Aún no hay pagos registrados")
         self.assertContains(response, "Navegación móvil")
+
+    def test_residente_ve_sus_pagos_y_recibo_confirmado(self):
+        pago = registrar_pago(
+            apartamento=self.apartamento,
+            importe_total=Decimal("500.00"),
+            fecha=timezone.localdate(),
+            metodo=Pago.Metodo.TRANSFERENCIA,
+            usuario=self.admin,
+            referencia="TRX-RESIDENTE",
+        )
+        confirmar_pago(
+            pago=pago,
+            usuario=self.admin,
+            aplicaciones=[(self.cargo, Decimal("500.00"))],
+        )
+        self.client.force_login(self.residente)
+
+        response = self.client.get(
+            reverse("accounts:edificio_detalle", args=[self.edificio.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "TRX-RESIDENTE")
+        self.assertContains(response, "RD$ 500.00")
+        self.assertContains(response, "Descargar recibo")
+        recibo_url = reverse(
+            "finance:recibo_descargar", args=[self.edificio.pk, pago.pk]
+        )
+        self.assertContains(response, recibo_url)
+
+    def test_residente_no_ve_cargos_ni_pagos_de_otro_edificio(self):
+        apartamento_ajeno = Apartamento.objects.create(
+            edificio=self.otro_edificio,
+            numero="999",
+            cuota_mensual=Decimal("8000.00"),
+        )
+        periodo_ajeno = PeriodoCuota.objects.create(
+            edificio=self.otro_edificio,
+            anio=timezone.localdate().year,
+            mes=timezone.localdate().month,
+            fecha_vencimiento=timezone.localdate(),
+            creado_por=self.admin,
+        )
+        Cargo.objects.create(
+            apartamento=apartamento_ajeno,
+            periodo=periodo_ajeno,
+            tipo=Cargo.Tipo.CUOTA_MENSUAL,
+            concepto="CARGO CONFIDENCIAL AJENO",
+            importe=Decimal("8000.00"),
+            fecha_vencimiento=timezone.localdate(),
+            creado_por=self.admin,
+        )
+        pago_ajeno = registrar_pago(
+            apartamento=apartamento_ajeno,
+            importe_total=Decimal("8000.00"),
+            fecha=timezone.localdate(),
+            metodo=Pago.Metodo.EFECTIVO,
+            usuario=self.admin,
+            referencia="PAGO CONFIDENCIAL AJENO",
+        )
+        self.client.force_login(self.residente)
+
+        response = self.client.get(
+            reverse("accounts:edificio_detalle", args=[self.edificio.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "CARGO CONFIDENCIAL AJENO")
+        self.assertNotContains(response, "PAGO CONFIDENCIAL AJENO")
+        self.assertNotContains(response, str(pago_ajeno.importe_total))
 
     def test_navegacion_residente_oculta_finanzas_administrativas(self):
         self.client.force_login(self.residente)
@@ -133,8 +208,10 @@ class FrontendPorRolTests(TestCase):
 
         self.assertContains(response, "Registrar gasto")
         self.assertContains(response, "Generar reporte")
-        self.assertContains(response, "Invitar usuario")
+        self.assertContains(response, "Usuarios")
         self.assertContains(response, self.otro_edificio.nombre)
+        self.assertContains(response, 'role="progressbar"')
+        self.assertContains(response, "metric-cleared")
 
 
 class FormatoMonedaTests(TestCase):

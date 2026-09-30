@@ -1,6 +1,7 @@
 <form method="post" enctype="multipart/form-data" hx-post="{% url 'finance:gasto_registrar' edificio.id %}" hx-target="#gasto-form-container" hx-encoding="multipart/form-data" hx-indicator=".global-progress" hx-disabled-elt="button">
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <div class="form-intro"><span class="form-intro-mark" aria-hidden="true">−</span><div class="form-intro-copy"><strong>Datos del gasto</strong><span>Describe el egreso y adjunta su comprobante para mantener el registro completo.</span></div></div>
   <div class="form-grid">
     {% include "includes/form_field.html" with field=form.categoria %}
     {% include "includes/form_field.html" with field=form.fecha %}

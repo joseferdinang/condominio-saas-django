@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Editar usuario · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Editar usuario</h1><p class="muted">@{{ membresia.usuario.username }}</p></div><a class="button button-secondary" href="{% url 'accounts:usuarios_lista' edificio.id %}">Volver</a></div>
+<section class="card form-card elevated-form">
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="message message-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+    {% if not form.editar_datos %}<p class="message">Esta cuenta pertenece a varios edificios. Aquí solo puedes modificar su rol y acceso en {{ edificio.nombre }}.</p>{% endif %}
+    <div class="form-grid"><div>{% include "includes/form_field.html" with field=form.first_name %}</div><div>{% include "includes/form_field.html" with field=form.last_name %}</div><div class="full">{% include "includes/form_field.html" with field=form.email %}</div><div>{% include "includes/form_field.html" with field=form.rol %}</div><div>{% include "includes/form_field.html" with field=form.activo %}</div></div>
+    <div class="form-actions"><button class="button" type="submit">Guardar cambios</button><a class="button button-secondary" href="{% url 'accounts:usuarios_lista' edificio.id %}">Cancelar</a></div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Usuarios · {{ edificio.nombre }}{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">{{ edificio.nombre }}</p><h1>Usuarios</h1><p class="muted">Consulta los accesos y roles de este edificio.</p></div><a class="button" href="{% url 'accounts:invitar_usuario' edificio.id %}">Invitar usuario</a></div>
+<section class="card form-card">
+  <form method="get" class="user-search"><label for="buscar-usuario">Buscar usuario</label><div><input id="buscar-usuario" name="q" type="search" value="{{ busqueda }}" placeholder="Nombre, usuario o correo"><button class="button button-secondary" type="submit">Buscar</button></div></form>
+</section>
+<section class="card table-card mobile-cards" aria-label="Usuarios del edificio">
+  <table><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+  {% for item in pagina %}<tr>
+    <td data-label="Usuario"><strong>{{ item.usuario.get_full_name|default:item.usuario.username }}</strong><small class="user-handle">@{{ item.usuario.username }}</small></td>
+    <td data-label="Correo">{{ item.usuario.email|default:"Sin correo" }}</td>
+    <td data-label="Rol">{{ item.get_rol_display }}</td>
+    <td data-label="Estado">{% if item.activo %}<span class="status-pill">Activo</span>{% else %}<span class="status-pill status-muted">Sin acceso</span>{% endif %}</td>
+    <td data-label="Acciones" class="table-action">
+      {% if not item.usuario.is_superuser and user.is_superuser or not item.usuario.is_superuser and item.rol != 'ADMINISTRADOR' %}
+      <a href="{% url 'accounts:usuario_editar' edificio.id item.id %}">Editar</a>
+      {% if item.activo and item.usuario_id != user.id %}<a class="text-danger" href="{% url 'accounts:usuario_retirar' edificio.id item.id %}">Retirar acceso</a>{% endif %}
+      {% else %}<span class="muted">Cuenta protegida</span>{% endif %}
+    </td>
+  </tr>{% empty %}<tr><td colspan="5">No hay usuarios que coincidan con la búsqueda.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% if pagina.has_other_pages %}<nav class="pagination" aria-label="Páginas de usuarios">{% if pagina.has_previous %}<a href="?q={{ busqueda|urlencode }}&page={{ pagina.previous_page_number }}">Anterior</a>{% endif %}<span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>{% if pagina.has_next %}<a href="?q={{ busqueda|urlencode }}&page={{ pagina.next_page_number }}">Siguiente</a>{% endif %}</nav>{% endif %}
+{% endblock %}

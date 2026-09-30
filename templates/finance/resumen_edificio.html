@@ -22,6 +22,26 @@
   <a class="button button-accent button-block button-large" href="{% url 'finance:pago_registrar' edificio.id residente_apartamento.id %}">{% if residente_saldo > 0 %}Reportar pago{% else %}Registrar un pago{% endif %}<span aria-hidden="true">→</span></a>
 </section>
 
+<div class="resident-finance-grid home-section">
+  <section class="card resident-list-card" aria-labelledby="resident-cargos-title">
+    <div class="section-header"><div><h2 id="resident-cargos-title">Cargos pendientes</h2><p class="section-description">Los importes que todavía debes cubrir.</p></div><a href="{% url 'accounts:apartamento_detalle' edificio.id residente_apartamento.id %}">Ver cuenta</a></div>
+    <ul class="resident-record-list">
+      {% for cargo in residente_cargos_pendientes %}
+      <li class="resident-record-row"><div class="resident-record-copy"><strong>{{ cargo.concepto }}</strong><span>{{ cargo.periodo.mes|mes_nombre }} {{ cargo.periodo.anio }} · vence {{ cargo.fecha_vencimiento|date:"d/m/Y" }}</span></div><div class="resident-record-meta"><strong class="amount">{{ cargo.residente_saldo_pendiente|dop }}</strong><span class="status {% if cargo.estado == 'PARCIAL' %}status-parcial{% else %}status-pendiente{% endif %}">{% if cargo.estado == 'PARCIAL' %}Abono aplicado{% else %}Pendiente{% endif %}</span></div></li>
+      {% empty %}<li class="resident-list-empty"><span class="empty-icon" aria-hidden="true">✓</span><strong>No tienes cargos pendientes</strong><span>Tu cuenta está al día.</span></li>{% endfor %}
+    </ul>
+  </section>
+
+  <section class="card resident-list-card" aria-labelledby="resident-pagos-title">
+    <div class="section-header"><div><h2 id="resident-pagos-title">Pagos registrados</h2><p class="section-description">Tus reportes más recientes.</p></div><a href="{% url 'accounts:apartamento_detalle' edificio.id residente_apartamento.id %}">Ver historial</a></div>
+    <ul class="resident-record-list">
+      {% for pago in residente_pagos_recientes %}
+      <li class="resident-record-row"><div class="resident-record-copy"><strong>{{ pago.importe_total|dop }}</strong><span>{{ pago.fecha|date:"d/m/Y" }} · {{ pago.get_metodo_display }}{% if pago.referencia %} · {{ pago.referencia }}{% endif %}</span><span>{% if pago.comprobante %}Comprobante adjunto{% else %}Sin comprobante{% endif %}</span></div><div class="resident-record-meta"><span class="status status-{{ pago.estado|lower }}">{{ pago.get_estado_display }}</span>{% if pago.estado == 'CONFIRMADO' %}<a class="resident-receipt-link" href="{% url 'finance:recibo_descargar' edificio.id pago.id %}">Descargar recibo</a>{% endif %}</div></li>
+      {% empty %}<li class="resident-list-empty"><span class="empty-icon" aria-hidden="true">▤</span><strong>Aún no hay pagos registrados</strong><span>Cuando reportes un pago, aparecerá aquí.</span></li>{% endfor %}
+    </ul>
+  </section>
+</div>
+
 <section class="home-section" aria-labelledby="acciones-title">
   <div class="section-header"><h2 id="acciones-title">Acciones rápidas</h2></div>
   <div class="quick-actions-grid">
@@ -30,12 +50,6 @@
     <a class="quick-action" href="{% url 'buildings:avisos_lista' edificio.id %}"><span class="feature-icon feature-icon-amber" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 13v-2l13-5v12L4 13zM7 14l1 6h4l-2-5"/></svg></span><span><strong>Avisos</strong><small>Novedades del edificio</small></span><span aria-hidden="true">›</span></a>
   </div>
 </section>
-
-{% if residente_ultimo_pago %}
-<section class="home-section" aria-labelledby="ultimo-pago-title"><div class="section-header"><h2 id="ultimo-pago-title">Último pago</h2><a href="{% url 'accounts:apartamento_detalle' edificio.id residente_apartamento.id %}">Ver historial</a></div>
-  <article class="card compact-transaction"><div><strong>{{ residente_ultimo_pago.importe_total|dop }}</strong><p>{{ residente_ultimo_pago.fecha|date:"d/m/Y" }} · {{ residente_ultimo_pago.get_metodo_display }}</p></div><span class="status status-{{ residente_ultimo_pago.estado|lower }}">{{ residente_ultimo_pago.get_estado_display }}</span></article>
-</section>
-{% endif %}
 
 <section class="home-section" aria-labelledby="avisos-title">
   <div class="section-header"><h2 id="avisos-title">Avisos del edificio</h2><a href="{% url 'buildings:avisos_lista' edificio.id %}">Ver todos</a></div>
@@ -50,9 +64,9 @@
 {% if conciliacion %}
 <section class="stats-grid" aria-label="Indicadores financieros">
   <article class="card metric-card metric-primary"><span class="metric-icon" aria-hidden="true">$</span><span class="metric-label">Saldo disponible</span><strong class="metric-value">{{ conciliacion.saldo_final|dop }}</strong><span class="metric-note">Conciliado al {{ conciliacion.fecha_hasta|date:"d/m/Y" }}</span></article>
-  <article class="card metric-card"><span class="metric-icon metric-icon-warning" aria-hidden="true">!</span><span class="metric-label">Pagos por revisar</span><strong class="metric-value">{{ pagos_pendientes_cantidad }}</strong><span class="metric-note">Comprobantes pendientes</span></article>
-  <article class="card metric-card"><span class="metric-icon metric-icon-danger" aria-hidden="true">−</span><span class="metric-label">Gastos del mes</span><strong class="metric-value">{{ gastos_mes_total|dop }}</strong><span class="metric-note">Solo movimientos confirmados</span></article>
-  <article class="card metric-card"><span class="metric-icon metric-icon-success" aria-hidden="true">✓</span><span class="metric-label">Apartamentos al día</span><strong class="metric-value">{{ apartamentos_al_dia }} de {{ apartamentos_resumen|length }}</strong><div class="progress-track" aria-label="{{ porcentaje_al_dia }}% de apartamentos al día"><span style="width:{{ porcentaje_al_dia }}%"></span></div><span class="metric-note">{{ apartamentos_pendientes }} con saldo pendiente</span></article>
+  <article class="card metric-card {% if pagos_pendientes_cantidad %}metric-attention{% else %}metric-cleared{% endif %}"><span class="metric-icon metric-icon-warning" aria-hidden="true">!</span><span class="metric-label">Pagos por revisar</span><strong class="metric-value">{{ pagos_pendientes_cantidad }}</strong><span class="metric-note">{% if pagos_pendientes_cantidad %}Comprobantes pendientes de confirmar{% else %}No hay pagos pendientes de revisión{% endif %}</span></article>
+  <article class="card metric-card metric-expense"><span class="metric-icon metric-icon-danger" aria-hidden="true">−</span><span class="metric-label">Gastos del mes</span><strong class="metric-value">{{ gastos_mes_total|dop }}</strong><span class="metric-note">Solo movimientos confirmados</span></article>
+  <article class="card metric-card metric-occupancy"><span class="metric-icon metric-icon-success" aria-hidden="true">✓</span><span class="metric-label">Apartamentos al día</span><strong class="metric-value">{{ apartamentos_al_dia }} de {{ apartamentos_resumen|length }}</strong><div class="progress-track" role="progressbar" aria-label="Apartamentos al día" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ porcentaje_al_dia }}"><span style="width:{{ porcentaje_al_dia }}%"></span></div><span class="metric-note">{{ apartamentos_pendientes }} con saldo pendiente</span></article>
 </section>
 
 <section class="action-strip" aria-label="Acciones frecuentes">
@@ -60,7 +74,7 @@
   <a href="{% url 'buildings:reservaciones_lista' edificio.id %}"><span aria-hidden="true">▣</span><strong>Reservaciones</strong><small>Zonas y horarios</small></a>
   {% if puede_gestionar_finanzas %}<a href="{% url 'finance:gasto_registrar' edificio.id %}"><span aria-hidden="true">＋</span><strong>Registrar gasto</strong><small>Guardar un movimiento</small></a>{% endif %}
   <a href="{% url 'finance:reportes_index' edificio.id %}"><span aria-hidden="true">↧</span><strong>Generar reporte</strong><small>Excel o PDF</small></a>
-  {% if puede_gestionar_usuarios %}<a href="{% url 'accounts:invitar_usuario' edificio.id %}"><span aria-hidden="true">♙</span><strong>Invitar usuario</strong><small>Asignar acceso y rol</small></a>{% endif %}
+  {% if puede_gestionar_usuarios %}<a href="{% url 'accounts:usuarios_lista' edificio.id %}"><span aria-hidden="true">♙</span><strong>Usuarios</strong><small>Accesos y roles del edificio</small></a>{% endif %}
 </section>
 
 <div class="grid dashboard-grid">

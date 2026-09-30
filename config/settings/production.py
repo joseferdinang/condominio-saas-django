@@ -20,7 +20,7 @@ if not CSRF_TRUSTED_ORIGINS or any(
     not origin.startswith("https://") or "*" in origin for origin in CSRF_TRUSTED_ORIGINS
 ):
     raise ImproperlyConfigured("Configura orígenes CSRF HTTPS explícitos.")
-if len(env_secret("POSTGRES_PASSWORD")) < 24:  # noqa: F405
+if len(DATABASES["default"].get("PASSWORD", "")) < 24:  # noqa: F405
     raise ImproperlyConfigured("Producción exige una contraseña PostgreSQL de al menos 24 caracteres.")
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
