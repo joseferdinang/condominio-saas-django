@@ -152,6 +152,23 @@ class ReportesExportablesTests(TestCase):
     def parametros(self, tipo, formato):
         return {**self.parametros_base, "tipo": tipo, "formato": formato}
 
+    def test_formulario_de_reportes_funciona_como_get_y_aísla_apartamentos(self):
+        self.client.force_login(self.residente)
+
+        response = self.client.get(
+            reverse("finance:reportes_index", args=[self.edificio.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'method="get"', html=False)
+        self.assertContains(response, 'name="tipo"', html=False)
+        self.assertContains(response, 'name="formato"', html=False)
+        self.assertContains(response, "Excel")
+        self.assertContains(response, "PDF")
+        self.assertContains(response, "A-1")
+        self.assertNotContains(response, "A-2")
+        self.assertNotContains(response, "SECRETO-9")
+
     def test_los_siete_reportes_excel_abren_y_conservan_metadatos(self):
         self.client.force_login(self.admin)
         tipos = (

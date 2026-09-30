@@ -22,7 +22,7 @@
           <label class="report-type-option">
             <input type="radio" name="tipo" value="{{ value }}" {% if form.tipo.value == value or not form.tipo.value and forloop.first %}checked{% endif %}>
             <span class="report-type-icon" aria-hidden="true">{% if value == "estado_cuenta" %}▤{% elif value == "cuentas_cobrar" %}$ {% elif value == "cuotas_periodo" %}◷{% elif value == "gastos_categoria" %}▥{% elif value == "resumen_mensual" %}↗{% elif value == "movimientos_caja" %}⇄{% else %}!{% endif %}</span>
-            <span><strong>{{ label }}</strong><small>{% if value == "estado_cuenta" %}Detalle de una unidad{% elif value == "cuentas_cobrar" %}Saldos pendientes{% elif value == "cuotas_periodo" %}Cobrado y por cobrar{% elif value == "gastos_categoria" %}Distribución de egresos{% elif value == "resumen_mensual" %}Ingresos y gastos{% elif value == "movimientos_caja" %}Entradas y salidas{% else %}Comprobantes pendientes{% endif %}</small></span>
+            <span class="report-option-copy"><strong>{{ label }}</strong><small>{% if value == "estado_cuenta" %}Detalle de una unidad{% elif value == "cuentas_cobrar" %}Saldos pendientes{% elif value == "cuotas_periodo" %}Cobrado y por cobrar{% elif value == "gastos_categoria" %}Distribución de egresos{% elif value == "resumen_mensual" %}Ingresos y gastos{% elif value == "movimientos_caja" %}Entradas y salidas{% else %}Comprobantes pendientes{% endif %}</small></span>
           </label>
           {% endfor %}
         </div>
@@ -42,8 +42,8 @@
       <fieldset class="format-choice-group">
         <legend><span class="panel-kicker">Paso 3</span><strong>Elige el formato</strong></legend>
         <div class="format-choice-grid">
-          <label class="format-option"><input type="radio" name="formato" value="xlsx" {% if form.formato.value != "pdf" %}checked{% endif %}><span><strong>Excel</strong><small>.xlsx para trabajar los datos</small></span></label>
-          <label class="format-option"><input type="radio" name="formato" value="pdf" {% if form.formato.value == "pdf" %}checked{% endif %}><span><strong>PDF</strong><small>Presentación lista para enviar</small></span></label>
+          <label class="format-option"><input type="radio" name="formato" value="xlsx" {% if form.formato.value != "pdf" %}checked{% endif %}><span class="report-format-badge" aria-hidden="true">XLSX</span><span class="report-format-copy"><strong>Excel</strong><small>Para revisar y trabajar los datos</small></span></label>
+          <label class="format-option"><input type="radio" name="formato" value="pdf" {% if form.formato.value == "pdf" %}checked{% endif %}><span class="report-format-badge" aria-hidden="true">PDF</span><span class="report-format-copy"><strong>PDF</strong><small>Listo para compartir o imprimir</small></span></label>
         </div>
       </fieldset>
 

@@ -655,12 +655,17 @@ input:focus, select:focus, textarea:focus {
 .report-builder legend small { color: var(--muted); font-size: .8rem; font-weight: 500; }
 .report-choice-group, .report-scope-group, .format-choice-group { padding-bottom: 1.35rem !important; border-bottom: 1px solid var(--line) !important; }
 .report-type-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
-.report-type-option, .format-option { position: relative; display: flex; align-items: flex-start; gap: .7rem; padding: .8rem; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+.report-type-option, .format-option { position: relative; display: flex; align-items: flex-start; gap: .7rem; padding: .8rem 2.2rem .8rem .8rem; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); cursor: pointer; transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
 .report-type-option:hover, .format-option:hover { border-color: #9ccfd0; box-shadow: var(--shadow); transform: translateY(-1px); }
 .report-type-option:has(input:checked), .format-option:has(input:checked) { border-color: var(--accent-strong); background: color-mix(in srgb, var(--accent) 55%, var(--surface)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-strong) 16%, transparent); }
+.report-type-option:focus-within, .format-option:focus-within { outline: 3px solid color-mix(in srgb, var(--focus-ring) 36%, transparent); outline-offset: 3px; }
+.report-type-option:has(input:checked)::after, .format-option:has(input:checked)::after { content: "✓"; position: absolute; top: .55rem; right: .55rem; display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; background: color-mix(in srgb, var(--brand) 18%, var(--surface)); color: var(--ink); font-size: .75rem; font-weight: 900; }
 .report-type-option input, .format-option input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); opacity: 0; }
-.report-type-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border-radius: 11px; background: #e4f3f5; color: var(--brand); font-size: 1.05rem; font-weight: 850; }
-.report-type-option > span:last-child, .format-option > span { display: grid; gap: .15rem; min-width: 0; }
+.report-type-icon { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border-radius: 11px; background: color-mix(in srgb, var(--brand) 12%, var(--surface)); color: var(--brand); font-size: 1.05rem; font-weight: 850; }
+.report-option-copy, .report-format-copy { display: grid; gap: .15rem; min-width: 0; }
+.report-format-badge { display: grid; place-items: center; width: 54px; height: 42px; flex: 0 0 auto; border-radius: 11px; background: color-mix(in srgb, var(--brand) 12%, var(--surface)); color: var(--brand); font-size: .68rem; font-weight: 900; letter-spacing: .04em; }
+.format-choice-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; }
+.format-option { align-items: center; min-height: 70px; }
 .report-type-option strong, .format-option strong { color: var(--navy); font-size: .86rem; line-height: 1.2; }
 .report-type-option small, .format-option small { color: var(--muted); font-size: .72rem; line-height: 1.3; }
 .report-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1155,7 +1160,7 @@ input[type="file"]::file-selector-button { margin-right: .7rem; padding: .45rem 
   .filter-bar-compact { grid-template-columns: 1fr; }
   .filter-bar .filter-actions { grid-column: auto; }
   .report-layout { grid-template-columns: 1fr; }
-  .report-type-grid, .report-filter-grid, .apartment-form-grid { grid-template-columns: 1fr; }
+  .report-type-grid, .report-filter-grid, .format-choice-grid, .apartment-form-grid { grid-template-columns: 1fr; }
   .report-submit-row { align-items: stretch; flex-direction: column; }
   .report-submit-row .button { width: 100%; }
   .report-summary-card, .report-help-card { margin-top: 0; }
