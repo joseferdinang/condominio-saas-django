@@ -62,8 +62,42 @@ LOGGING = {
     },
 }
 
+OBJECT_STORAGE_BACKEND = os.getenv("OBJECT_STORAGE_BACKEND", "filesystem").strip().lower()
+if OBJECT_STORAGE_BACKEND == "s3":
+    object_storage_required = (
+        "AWS_STORAGE_BUCKET_NAME",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_ENDPOINT_URL_S3",
+        "AWS_REGION",
+    )
+    missing_object_storage = [name for name in object_storage_required if not os.getenv(name)]
+    if missing_object_storage:
+        raise ImproperlyConfigured(
+            "Object Storage S3 requiere estas variables: " + ", ".join(missing_object_storage)
+        )
+    default_storage = {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": os.environ["AWS_STORAGE_BUCKET_NAME"],
+            "access_key": os.environ["AWS_ACCESS_KEY_ID"],
+            "secret_key": os.environ["AWS_SECRET_ACCESS_KEY"],
+            "endpoint_url": os.environ["AWS_ENDPOINT_URL_S3"],
+            "region_name": os.environ["AWS_REGION"],
+            "addressing_style": "path",
+            "default_acl": None,
+            "querystring_auth": True,
+            "file_overwrite": False,
+            "location": "media",
+        },
+    }
+elif OBJECT_STORAGE_BACKEND == "filesystem":
+    default_storage = {"BACKEND": "django.core.files.storage.FileSystemStorage"}
+else:
+    raise ImproperlyConfigured("OBJECT_STORAGE_BACKEND debe ser 'filesystem' o 's3'.")
+
 STORAGES = {
-    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "default": default_storage,
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
         "OPTIONS": {

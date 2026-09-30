@@ -95,3 +95,40 @@ class ProductionSafetyTests(SimpleTestCase):
             "assert options['directory_permissions_mode'] == 0o755"
         )], env=environment, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr.decode())
+
+    def test_production_configures_private_s3_storage_when_enabled(self):
+        environment = {key: value for key, value in os.environ.items() if not key.endswith("_FILE")}
+        environment.update({
+            "DJANGO_SECRET_KEY": "aB9cD8eF7gH6" * 6,
+            "POSTGRES_PASSWORD": "TestOnlyDatabaseValue" * 2,
+            "DJANGO_ALLOWED_HOSTS": "pilot.example.test",
+            "DJANGO_CSRF_TRUSTED_ORIGINS": "https://pilot.example.test",
+            "OBJECT_STORAGE_BACKEND": "s3",
+            "AWS_STORAGE_BUCKET_NAME": "condominio-comprobantes",
+            "AWS_ACCESS_KEY_ID": "nak_test_token_id",
+            "AWS_SECRET_ACCESS_KEY": "test_secret_key",
+            "AWS_ENDPOINT_URL_S3": "https://branch.storage.example.test",
+            "AWS_REGION": "us-east-2",
+        })
+        result = subprocess.run([sys.executable, "-c", (
+            "from config.settings import production as p; "
+            "s=p.STORAGES['default']; assert s['BACKEND']=='storages.backends.s3.S3Storage'; "
+            "o=s['OPTIONS']; assert o['bucket_name']=='condominio-comprobantes'; "
+            "assert o['addressing_style']=='path'; assert o['querystring_auth'] is True; "
+            "assert o['default_acl'] is None"
+        )], env=environment, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr.decode())
+
+    def test_production_rejects_incomplete_s3_storage_configuration(self):
+        environment = {key: value for key, value in os.environ.items() if not key.endswith("_FILE")}
+        environment.update({
+            "DJANGO_SECRET_KEY": "aB9cD8eF7gH6" * 6,
+            "POSTGRES_PASSWORD": "TestOnlyDatabaseValue" * 2,
+            "DJANGO_ALLOWED_HOSTS": "pilot.example.test",
+            "DJANGO_CSRF_TRUSTED_ORIGINS": "https://pilot.example.test",
+            "OBJECT_STORAGE_BACKEND": "s3",
+        })
+        result = subprocess.run([sys.executable, "-c", "import config.settings.production"],
+                                env=environment, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(b"Object Storage S3 requiere", result.stderr)
