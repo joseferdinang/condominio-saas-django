@@ -66,6 +66,21 @@ class PreferenciaVisualTests(TestCase):
         self.assertEqual(preferencia.tema, PreferenciaVisual.Tema.OSCURO)
         self.assertEqual(preferencia.paleta, PreferenciaVisual.Paleta.CORAL)
 
+    def test_paleta_almacenada_conserva_clave_y_nombre_visible_arena(self):
+        PreferenciaVisual.objects.create(
+            usuario=self.usuario,
+            tema=PreferenciaVisual.Tema.OSCURO,
+            paleta=PreferenciaVisual.Paleta.VIOLETA,
+        )
+        self.client.force_login(self.usuario)
+
+        response = self.client.get(reverse("accounts:dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'data-palette="violeta"')
+        self.assertContains(response, 'aria-label="Paleta Arena"')
+        self.assertContains(response, 'data-theme="oscuro"')
+
     def test_rechaza_valores_no_permitidos(self):
         self.client.force_login(self.usuario)
 
@@ -91,5 +106,5 @@ class PreferenciaVisualTests(TestCase):
         self.assertContains(response, 'data-palette="esmeralda"')
         self.assertContains(response, "Modo claro")
         self.assertContains(response, "Colores del portal")
-        self.assertContains(response, "css/app.css?v=20260926.1")
+        self.assertContains(response, "css/app.css?v=20260929.3")
         self.assertContains(response, "js/theme.js?v=20260920.2")

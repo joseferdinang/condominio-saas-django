@@ -4,9 +4,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#073d63">
+  <meta name="theme-color" content="#0e6674">
   <title>{% block title %}Mi Condominio{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20260926.1">
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20260929.3">
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/sidebar.js' %}?v=20260920.2" defer></script>
   <script src="{% static 'js/theme.js' %}?v=20260920.2" defer></script>
@@ -87,7 +88,7 @@
           <div class="palette-options" role="group" aria-label="Paleta de colores">
             <button class="palette-option palette-oceano" type="button" data-palette="oceano" aria-label="Paleta Océano" aria-pressed="{% if paleta_visual == 'oceano' %}true{% else %}false{% endif %}"><span></span></button>
             <button class="palette-option palette-esmeralda" type="button" data-palette="esmeralda" aria-label="Paleta Esmeralda" aria-pressed="{% if paleta_visual == 'esmeralda' %}true{% else %}false{% endif %}"><span></span></button>
-            <button class="palette-option palette-violeta" type="button" data-palette="violeta" aria-label="Paleta Violeta" aria-pressed="{% if paleta_visual == 'violeta' %}true{% else %}false{% endif %}"><span></span></button>
+            <button class="palette-option palette-arena" type="button" data-palette="violeta" aria-label="Paleta Arena" aria-pressed="{% if paleta_visual == 'violeta' %}true{% else %}false{% endif %}"><span></span></button>
             <button class="palette-option palette-coral" type="button" data-palette="coral" aria-label="Paleta Coral" aria-pressed="{% if paleta_visual == 'coral' %}true{% else %}false{% endif %}"><span></span></button>
           </div>
           <span class="appearance-status" role="status" aria-live="polite"></span>
