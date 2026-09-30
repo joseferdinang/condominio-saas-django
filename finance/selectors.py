@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from django.db.models import Sum
+from django.db.models import DecimalField, ExpressionWrapper, F, Q, Sum, Value
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from accounts.models import UsuarioEdificio
@@ -119,9 +120,45 @@ def contexto_resumen_edificio(*, usuario, edificio: Edificio):
                         .order_by("fecha_vencimiento", "pk")
                         .first()
                     ),
-                    "residente_ultimo_pago": Pago.objects.filter(
+                    "residente_cargos_pendientes": (
+                        Cargo.objects.filter(
+                            apartamento=apartamento,
+                            estado__in=[
+                                Cargo.Estado.PENDIENTE,
+                                Cargo.Estado.PARCIAL,
+                            ],
+                        )
+                        .annotate(
+                            residente_total_aplicado=Coalesce(
+                                Sum(
+                                    "aplicaciones__importe_aplicado",
+                                    filter=Q(
+                                        aplicaciones__pago__estado=Pago.Estado.CONFIRMADO
+                                    ),
+                                ),
+                                Value(ZERO),
+                                output_field=DecimalField(
+                                    max_digits=14,
+                                    decimal_places=2,
+                                ),
+                            )
+                        )
+                        .annotate(
+                            residente_saldo_pendiente=ExpressionWrapper(
+                                F("importe") - F("residente_total_aplicado"),
+                                output_field=DecimalField(
+                                    max_digits=14,
+                                    decimal_places=2,
+                                ),
+                            )
+                        )
+                        .filter(residente_saldo_pendiente__gt=ZERO)
+                        .select_related("periodo")
+                        .order_by("fecha_vencimiento", "pk")[:5]
+                    ),
+                    "residente_pagos_recientes": Pago.objects.filter(
                         apartamento=apartamento
-                    ).order_by("-fecha", "-pk").first(),
+                    ).order_by("-fecha", "-pk")[:5],
                 }
             )
         return contexto

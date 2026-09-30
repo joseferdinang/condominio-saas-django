@@ -907,6 +907,21 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .feature-icon-blue { color: #2677cf; background: #dceeff; }
 .feature-icon-amber { color: #aa6905; background: #fff0d1; }
 .resident-main-card .button { gap: .8rem; }
+.resident-finance-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .8rem; }
+.resident-list-card { min-width: 0; padding: 1.15rem; }
+.resident-list-card .section-header { align-items: flex-start; }
+.resident-list-card .section-header h2 { font-size: 1.12rem; }
+.resident-record-list { list-style: none; margin: 0; padding: 0; }
+.resident-record-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem; padding: .8rem 0; border-top: 1px solid var(--line); }
+.resident-record-copy { display: grid; gap: .18rem; min-width: 0; }
+.resident-record-copy strong { color: var(--ink); }
+.resident-record-copy span { color: var(--muted); font-size: .78rem; overflow-wrap: anywhere; }
+.resident-record-meta { display: grid; justify-items: end; gap: .35rem; flex: 0 0 auto; }
+.resident-record-meta > .amount { color: var(--ink); }
+.resident-receipt-link { font-size: .76rem; font-weight: 750; text-align: right; }
+.resident-list-empty { display: grid; justify-items: center; gap: .2rem; padding: 1.2rem .5rem .4rem; border-top: 1px solid var(--line); color: var(--muted); text-align: center; }
+.resident-list-empty strong { color: var(--ink); }
+.resident-list-empty > span:last-child { font-size: .8rem; }
 .quick-actions-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; }
 .quick-action { display: flex; align-items: center; gap: .8rem; min-height: 92px; padding: .9rem; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .quick-action:hover { border-color: #add9d7; text-decoration: none; }
@@ -1094,6 +1109,11 @@ input[type="file"]::file-selector-button { margin-right: .7rem; padding: .45rem 
   .resident-main-card { margin: -2rem 0 0; padding: 1rem; border-radius: 22px; }
   .balance-summary { grid-template-columns: auto 1fr; gap: .7rem; }
   .balance-summary > .status { grid-column: 2; justify-self: start; }
+  .resident-finance-grid { grid-template-columns: 1fr; gap: .7rem; }
+  .resident-list-card { padding: .95rem; }
+  .resident-record-row { align-items: flex-start; gap: .5rem; }
+  .resident-record-meta { max-width: 44%; }
+  .resident-list-card .section-header > a { flex: 0 0 auto; font-size: .8rem; }
   .feature-icon { width: 46px; height: 46px; padding: .68rem; }
   .quick-actions-grid { grid-template-columns: 1fr 1fr; gap: .6rem; }
   .quick-action { min-height: 112px; align-items: flex-start; flex-direction: column; gap: .45rem; padding: .8rem; }
