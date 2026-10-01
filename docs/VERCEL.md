@@ -2,6 +2,56 @@
 
 Vercel detecta Django por `manage.py`, usa la aplicación WSGI configurada y publica los estáticos recopilados por `collectstatic`. La raíz del proyecto debe conservar `manage.py`, `requirements.txt` y `.python-version`.
 
+El `requirements.txt` de la raíz declara las dependencias explícitamente porque el parser de Vercel no resolvió las referencias anidadas. Mantén sus versiones alineadas con `requirements/base.txt` y `requirements/production.txt`.
+
+## Despliegue verificado
+
+- Portal: https://condominio-saas-django.vercel.app/
+- Proyecto Vercel: `condominio-saas-django`, equipo `projects-bc21`.
+- Rama de producción: `codex/rediseno-ui`; `main` no se modificó.
+- Neon: proyecto `Condominios`, rama `production`, base `CondominioDB`.
+- Rol exclusivo de la aplicación: `condominio_app`; sin privilegios de administración de roles.
+- Variables sensibles limitadas a Production, sin credenciales de producción en Preview.
+- Migraciones aplicadas; `/health/` devuelve `200` y `database: ok`.
+- Carga y lectura reales verificadas en el bucket privado. Archivo técnico: `media/verification/deployment-check.txt`.
+- Login público responde `200`; HSTS y `X-Frame-Options: DENY` verificados.
+
+La base está preparada sin edificios ni usuarios ficticios. Estas verificaciones no sustituyen una aceptación completa con usuarios y operaciones del edificio piloto.
+
+## Crear el administrador inicial
+
+En PowerShell, dentro de la carpeta del proyecto, copia desde Neon la URL PostgreSQL de `CondominioDB`. No la publiques ni la guardes en Git. Este comando usa las credenciales solo en el proceso local; no cambia el modo de producción del sitio.
+
+```powershell
+$neonConnection = Read-Host 'URL PostgreSQL de CondominioDB' -AsSecureString
+$env:DATABASE_URL = [System.Net.NetworkCredential]::new('', $neonConnection).Password
+$env:DJANGO_SETTINGS_MODULE = 'config.settings.development'
+.venv\Scripts\python.exe manage.py createsuperuser --username admin
+Remove-Item Env:DATABASE_URL
+Remove-Item Env:DJANGO_SETTINGS_MODULE
+```
+
+El comando solicita correo y contraseña de manera interactiva. Después entra en `/admin/`, crea el edificio real y asigna los roles del portal. No reutilices las contraseñas de demostración.
+
+## Rotar la clave Django
+
+La clave del despliegue es nueva y aleatoria; no es necesario cambiarla inmediatamente por completar la instalación. Rótala si se expone o como parte de tu política de seguridad.
+
+1. Genera una clave nueva localmente: `.venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(64))"`.
+2. En Vercel, abre el proyecto → Environment Variables → `DJANGO_SECRET_KEY` → Edit.
+3. Sustituye el valor para Production y guarda. No lo pegues en chats ni Git.
+4. En Deployments, vuelve a desplegar la última versión de `codex/rediseno-ui` a Production.
+5. Comprueba `/health/` y el inicio de sesión. La rotación invalida las sesiones y firmas anteriores; los usuarios deben iniciar sesión nuevamente.
+
+## Pendientes antes del piloto
+
+- Crear el administrador y los datos reales del edificio.
+- Configurar y verificar entrega real de correo en Production; el backend local de consola no entrega invitaciones.
+- Verificar PDF en el runtime Vercel: WeasyPrint necesita bibliotecas nativas. La suite local tuvo 7 errores de PDF por faltar `libgobject-2.0-0` en Windows; las otras 130 pruebas pasaron.
+- Ejecutar aceptación autenticada de permisos, recibos, reportes y comprobantes desde el sitio desplegado.
+- Adaptar y probar los respaldos/restauración de PostgreSQL y Object Storage, y la ejecución mensual de cuotas, para este alojamiento.
+- Revisar los límites de cargas de Vercel y la política del plan antes de recibir archivos y operar comercialmente.
+
 ## Variables por entorno
 
 Para cada entorno de Vercel, configura los valores en Project Settings → Environment Variables. No los guardes en Git ni los pegues en chats.
