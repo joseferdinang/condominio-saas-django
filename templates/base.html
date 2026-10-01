@@ -8,11 +8,12 @@
   <title>{% block title %}Mi Condominio{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
   <link rel="stylesheet" href="{% static 'css/app.css' %}?v=20260929.8">
+  <link rel="stylesheet" href="{% static 'css/minimal.css' %}?v=20261001.1" media="screen">
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/sidebar.js' %}?v=20260920.2" defer></script>
   <script src="{% static 'js/theme.js' %}?v=20260920.2" defer></script>
 </head>
-<body class="{% if user.is_authenticated %}has-sidebar{% endif %}{% if nav_es_residente %} role-resident{% endif %}">
+<body class="minimal-ui {% if user.is_authenticated %}has-sidebar{% endif %}{% if nav_es_residente %} role-resident{% endif %}">
   <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
   <div class="global-progress htmx-indicator" aria-label="Cargando"></div>
 
@@ -110,8 +111,8 @@
         <span><strong>{{ user.get_full_name|default:user.get_username }}</strong>{% if nav_membresia %}<small>{{ nav_membresia.get_rol_display }}</small>{% endif %}</span>
       </div>
       <div class="sidebar-footer-actions">
-        <a href="{% url 'accounts:password_change' %}">Mi cuenta</a>
-        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link-button" type="submit">Salir</button></form>
+        <a class="button button-secondary" href="{% url 'accounts:mi_cuenta' %}">Mi cuenta</a>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="button button-secondary" type="submit">Salir</button></form>
       </div>
     </div>
   </aside>
@@ -130,7 +131,7 @@
           {% else %}<span>{{ nav_edificio.nombre }}</span>{% endif %}
         {% else %}<span>Portal de condominios</span>{% endif %}
       </div>
-      <a class="top-account" href="{% url 'accounts:password_change' %}" aria-label="Mi cuenta">{% firstof user.first_name user.username as display_name %}{{ display_name|first|upper }}</a>
+      <a class="top-account" href="{% url 'accounts:mi_cuenta' %}" aria-label="Mi cuenta">{% firstof user.first_name user.username as display_name %}{{ display_name|first|upper }}</a>
     </header>
     {% endif %}
 
@@ -151,7 +152,7 @@
       {% if nav_puede_finanzas %}<a class="{% if url_name == 'gastos_lista' or url_name == 'gasto_registrar' %}active{% endif %}" href="{% url 'finance:gastos_lista' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16v12H4zM7 7V5h10v2M8 12h8M8 16h5"/></svg><span>Gastos</span></a>{% elif nav_puede_reportes %}<a class="{% if url_name == 'reportes_index' %}active{% endif %}" href="{% url 'finance:reportes_index' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3v18h18M7 16V9M12 16V5M17 16v-4"/></svg><span>Reportes</span></a>{% endif %}
       {% endif %}
       <a class="{% if url_name == 'avisos_lista' %}active{% endif %}" href="{% url 'buildings:avisos_lista' nav_edificio.id %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg><span>Avisos</span></a>
-      <a class="{% if url_name == 'password_change' %}active{% endif %}" href="{% url 'accounts:password_change' %}"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/></svg><span>Perfil</span></a>
+      <a class="{% if url_name == 'mi_cuenta' or url_name == 'password_change' %}active{% endif %}" href="{% url 'accounts:mi_cuenta' %}"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0"/></svg><span>Perfil</span></a>
     </nav>
     {% endwith %}
     {% endif %}

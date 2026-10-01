@@ -13,6 +13,7 @@ urlpatterns = [
         name="login",
     ),
     path("cuentas/logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("cuentas/mi-cuenta/", views.mi_cuenta, name="mi_cuenta"),
     path(
         "cuentas/apariencia/",
         views.guardar_preferencia_visual,

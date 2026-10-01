@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Mi cuenta · Mi Condominio{% endblock %}
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Tu perfil</p><h1>Mi cuenta</h1><p>Actualiza el nombre con el que entras al portal.</p></div></div>
+<section class="card form-card">
+  <form method="post">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}{% include "includes/form_field.html" with field=field %}{% endfor %}
+    <div class="form-actions"><button class="button" type="submit">Guardar cambios</button><a class="button button-secondary" href="{% url 'accounts:password_change' %}">Cambiar contraseña</a></div>
+  </form>
+</section>
+{% endblock %}

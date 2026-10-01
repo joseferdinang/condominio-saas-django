@@ -1,0 +1,133 @@
+/* Minimal: shared presentation only. app.css retains layout and interaction rules. */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #24272b;
+  --navy: #24272b;
+  --muted: #62666d;
+  --line: #e5e6e8;
+  --nav-surface: #f7f7f8;
+  --font-display: var(--font-body);
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --shadow: none;
+  --shadow-strong: 0 8px 24px rgb(0 0 0 / 8%);
+  --sidebar-w: 244px;
+}
+html[data-theme="oscuro"] {
+  --bg: #18191b;
+  --surface: #1d1f22;
+  --ink: #ededee;
+  --navy: #ededee;
+  --muted: #afb2b8;
+  --line: #35383d;
+  --nav-surface: #202226;
+  --shadow: none;
+  --shadow-strong: 0 8px 24px rgb(0 0 0 / 24%);
+}
+.minimal-ui h1 { font-weight: 600; font-size: clamp(1.5rem, 3vw, 2rem); }
+.minimal-ui h2 { font-weight: 600; font-size: 1.05rem; }
+.minimal-ui h3 { font-weight: 600; }
+.minimal-ui .sidebar { background: var(--nav-surface); color: var(--ink); border-right: 1px solid var(--line); }
+.minimal-ui .sidebar-brand { color: var(--ink); padding-bottom: 1.25rem; }
+.minimal-ui .sidebar-brand-text { font-size: .98rem; font-weight: 650; }
+.minimal-ui .sidebar-brand .brand-mark { width: 32px; height: 32px; border-radius: 7px; background: var(--accent); color: var(--brand); }
+.minimal-ui .brand-mark svg { width: 23px; height: 23px; }
+.minimal-ui .sidebar-brand small,
+.minimal-ui .sidebar-section { color: var(--muted); }
+.minimal-ui .sidebar-section { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.minimal-ui .sidebar-link { min-height: 44px; border-radius: 6px; color: var(--muted); font-size: .85rem; }
+.minimal-ui .sidebar-link:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); color: var(--ink); box-shadow: none; transform: translateX(2px); }
+.minimal-ui .sidebar-link.active { background: color-mix(in srgb, var(--brand) 9%, var(--nav-surface)); color: var(--brand); font-weight: 600; }
+.minimal-ui .sidebar-icon { width: 18px; height: 18px; stroke-width: 1.7; }
+.minimal-ui .sidebar-link:hover .sidebar-icon { transform: none; }
+.minimal-ui .sidebar-divider { background: var(--line); }
+.minimal-ui .sidebar-footer { border-color: var(--line); }
+.minimal-ui .sidebar-footer a,
+.minimal-ui .sidebar-footer .link-button { color: var(--muted); }
+.minimal-ui .sidebar-footer a:hover,
+.minimal-ui .sidebar-footer .link-button:hover { color: var(--brand); }
+.minimal-ui .appearance-button { background: transparent; border-color: var(--line); color: var(--muted); font-weight: 500; border-radius: 6px; }
+.minimal-ui .appearance-button:hover { background: var(--surface); color: var(--ink); border-color: var(--muted); }
+.minimal-ui .user-avatar { background: var(--accent); color: var(--brand); }
+.minimal-ui .user-identity strong { font-size: .85rem; color: var(--ink); }
+.minimal-ui .user-identity small { color: var(--muted); }
+.minimal-ui .top-bar { background: var(--bg); box-shadow: none; border-bottom: 1px solid var(--line); }
+.minimal-ui .top-bar-title { color: var(--muted); font-size: .85rem; }
+.minimal-ui .page-content { max-width: 1400px; padding: 2rem 2.5rem; }
+.minimal-ui .card { border-radius: 8px; box-shadow: none; }
+.minimal-ui .page-header { margin-bottom: 1.75rem; }
+.minimal-ui .page-header h1 { margin-bottom: .35rem; }
+.minimal-ui .stats-grid { gap: 0; border-block: 1px solid var(--line); padding: 1.25rem 0; }
+.minimal-ui .metric-card.card { background: transparent; color: var(--ink); border: 0; border-radius: 0; min-height: 0; padding: .6rem 1.25rem; box-shadow: none; }
+.minimal-ui .metric-card.card + .metric-card { border-left: 1px solid var(--line); }
+.minimal-ui .metric-card.card .metric-icon { display: none; }
+.minimal-ui .metric-card.card .metric-label,
+.minimal-ui .metric-card.card .metric-note { color: var(--muted); }
+.minimal-ui .metric-value { font-weight: 600; font-variant-numeric: tabular-nums; }
+.minimal-ui .metric-card.card .metric-value { font-size: clamp(1.25rem, 2.3vw, 1.9rem); color: var(--ink); }
+.minimal-ui .dashboard-panel.card { background: transparent; border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 1.25rem 0; }
+.minimal-ui .dashboard-grid { column-gap: 2.5rem; }
+.minimal-ui .panel-kicker { color: var(--muted); font-weight: 500; letter-spacing: .04em; }
+.minimal-ui .action-strip { margin: 1.5rem 0 2rem; }
+.minimal-ui .action-strip a,
+.minimal-ui .quick-action { border-radius: 6px; box-shadow: none; background: var(--surface); }
+.minimal-ui .action-strip a:hover,
+.minimal-ui .quick-action:hover,
+.minimal-ui .building-card:hover { transform: none; box-shadow: none; background: var(--nav-surface); border-color: var(--line); }
+.minimal-ui .action-strip a > span { background: transparent; width: 25px; border-radius: 0; }
+.minimal-ui .portal-welcome,
+.minimal-ui .resident-welcome { min-height: 0; margin: 0 0 1.5rem; padding: 0 0 1.5rem; color: var(--ink); background: transparent; border-radius: 0; border-bottom: 1px solid var(--line); box-shadow: none; }
+.minimal-ui .portal-welcome .eyebrow,
+.minimal-ui .welcome-kicker { color: var(--muted); letter-spacing: .04em; font-weight: 500; }
+.minimal-ui .portal-welcome p:last-child,
+.minimal-ui .resident-welcome h1 + p { color: var(--muted); }
+.minimal-ui .portal-welcome > div { max-width: 100%; }
+.minimal-ui .portal-welcome-mark,
+.minimal-ui .resident-building-icon,
+.minimal-ui .resident-welcome::after { display: none; }
+.minimal-ui .resident-main-card { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: none; }
+.minimal-ui .resident-list-card { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 1.25rem 0; }
+.minimal-ui .balance-summary .feature-icon { display: none; }
+.minimal-ui .balance-summary { grid-template-columns: 1fr auto; }
+.minimal-ui .account-hero { color: var(--ink); background: var(--nav-surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: none; }
+.minimal-ui .account-hero .metric-label,
+.minimal-ui .account-hero-secondary span { color: var(--muted); }
+.minimal-ui .account-hero-secondary { border-color: var(--line); }
+.minimal-ui .account-hero .status { background: var(--accent); color: var(--brand); }
+.minimal-ui .report-summary-card,
+.minimal-ui .report-help-card { box-shadow: none; border-radius: 8px; }
+.minimal-ui .report-type-option,
+.minimal-ui .format-option { border-radius: 6px; }
+.minimal-ui .notice-card p { color: var(--muted); }
+.minimal-ui .button { border-radius: 6px; box-shadow: none; font-weight: 600; }
+.minimal-ui .auth-brand-panel { background: var(--nav-surface); color: var(--ink); border-right: 1px solid var(--line); }
+.minimal-ui .auth-brand-panel h1,
+.minimal-ui .auth-logo { color: var(--ink); }
+.minimal-ui .auth-brand-panel .eyebrow,
+.minimal-ui .auth-brand-panel > p:last-of-type { color: var(--muted); }
+.minimal-ui .trust-note { color: var(--brand); background: var(--accent); }
+.minimal-ui .mobile-bottom-nav { background: var(--surface); box-shadow: none; }
+.minimal-ui .mobile-bottom-nav a { color: var(--muted); }
+.minimal-ui .mobile-bottom-nav a.active { color: var(--brand); }
+.minimal-ui .site-footer { color: var(--muted); font-size: .75rem; }
+.minimal-ui .sidebar-footer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.minimal-ui .sidebar-footer-actions form { margin: 0; }
+.minimal-ui .sidebar-footer-actions .button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: .5rem; background: transparent; border: 1px solid var(--line); color: var(--ink); font-size: .8rem; text-decoration: none; }
+.minimal-ui .sidebar-footer-actions .button:hover { background: var(--surface); border-color: var(--muted); }
+@media (min-width: 768px) {
+  .minimal-ui .action-strip { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}
+@media (max-width: 767px) {
+  .minimal-ui .page-content { padding: 1.25rem 1rem; }
+  .minimal-ui .metric-card.card { padding: .8rem; }
+  .minimal-ui .metric-card.card:nth-child(odd) { border-left: 0; }
+  .minimal-ui .metric-card.card:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .minimal-ui .resident-welcome { padding-top: .5rem; }
+  .minimal-ui .balance-summary > .status { grid-column: auto; }
+  .minimal-ui .quick-action { min-height: 100px; }
+  .minimal-ui .mobile-cards tr { box-shadow: none; border-radius: 8px; }
+  .minimal-ui .auth-card { border-radius: 10px; }
+  .minimal-ui .account-hero-secondary { border-top-color: var(--line); }
+}

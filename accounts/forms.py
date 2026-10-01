@@ -8,6 +8,37 @@ from django.db import transaction
 from .models import UsuarioEdificio
 
 
+class MiCuentaForm(forms.ModelForm):
+    password_actual = forms.CharField(
+        label="Contraseña actual", strip=False,
+        widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
+        help_text="Confirma tu contraseña para guardar los cambios.",
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ["username", "first_name", "last_name"]
+        labels = {"username": "Nombre de usuario", "first_name": "Nombre", "last_name": "Apellido"}
+        help_texts = {"username": "Hasta 150 caracteres. Usa letras, números y @ . + - _."}
+        widgets = {
+            "username": forms.TextInput(attrs={"autocomplete": "username"}),
+            "first_name": forms.TextInput(attrs={"autocomplete": "given-name"}),
+            "last_name": forms.TextInput(attrs={"autocomplete": "family-name"}),
+        }
+
+    def clean_username(self):
+        value = self.cleaned_data["username"].strip()
+        if get_user_model().objects.filter(username__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Ese nombre de usuario ya está en uso.")
+        return value
+
+    def clean_password_actual(self):
+        value = self.cleaned_data["password_actual"]
+        if not self.instance.check_password(value):
+            raise forms.ValidationError("La contraseña actual no es correcta.")
+        return value
+
+
 class InvitacionUsuarioForm(forms.Form):
     username = forms.CharField(
         label="Nombre de usuario",

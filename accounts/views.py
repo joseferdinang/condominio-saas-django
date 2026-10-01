@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
@@ -21,7 +21,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 from core.models import Cambio
 
-from .forms import EditarUsuarioEdificioForm, InvitacionUsuarioForm
+from .forms import EditarUsuarioEdificioForm, InvitacionUsuarioForm, MiCuentaForm
 from .models import PreferenciaVisual, UsuarioEdificio
 from .services import (
     apartamentos_visibles,
@@ -33,6 +33,36 @@ from .services import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def mi_cuenta(request):
+    anterior = request.user.get_username()
+    form = MiCuentaForm(
+        request.POST if request.method == "POST" else None, instance=request.user
+    )
+    if request.method == "POST" and form.is_valid():
+        try:
+            with transaction.atomic():
+                usuario = form.save()
+                edificios = (
+                    UsuarioEdificio.objects.filter(usuario=usuario, activo=True)
+                    .values_list("edificio_id", flat=True).distinct()
+                )
+                for edificio_id in edificios:
+                    Cambio.objects.create(
+                        edificio_id=edificio_id, usuario=usuario,
+                        usuario_nombre=usuario.get_username(), accion=Cambio.Accion.MODIFICAR,
+                        modelo=usuario._meta.label, objeto_id=str(usuario.pk),
+                        descripcion=f"Actualización de cuenta propia: {anterior} → {usuario.get_username()}"[:255],
+                    )
+        except IntegrityError:
+            form.add_error("username", "Ese nombre de usuario ya está en uso.")
+        else:
+            messages.success(request, "Tu cuenta se actualizó. Usa el nuevo nombre de usuario para iniciar sesión.")
+            return redirect("accounts:mi_cuenta")
+    return render(request, "accounts/mi_cuenta.html", {"form": form})
 
 
 @login_required
