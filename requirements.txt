@@ -1,1 +1,8 @@
--r requirements/production.txt
+# Vercel's Python parser requires explicit dependencies here.
+# Keep versions aligned with requirements/base.txt and production.txt.
+Django==5.2.17
+psycopg[binary]==3.3.5
+openpyxl==3.1.5
+WeasyPrint==70.0
+django-storages[s3]==1.14.6
+gunicorn==26.2.0
