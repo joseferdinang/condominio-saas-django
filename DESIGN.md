@@ -53,3 +53,7 @@ animaciones terminan y `prefers-reduced-motion` las elimina. El hover del tejado
 solo aplica a dispositivos con ratón. Se conservan foco, errores y carga.
 Mostrar/ocultar contraseña es una mejora progresiva: el formulario funciona sin
 JavaScript. Se conserva el login, CSRF, recuperación y redirección de Django.
+La recuperación de contraseña comparte esta identidad mediante `auth_base.html`:
+formulario de correo, confirmación genérica de envío, nueva contraseña y enlace
+inválido conservan la misma composición. Las validaciones y tokens siguen siendo
+los de Django, con errores visibles y ayuda de contraseña asociada a los campos.

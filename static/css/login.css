@@ -89,3 +89,21 @@
 @media (prefers-reduced-motion: reduce) {
   .login-page *, .login-page *::before, .login-page *::after { animation: none !important; transition: none !important; }
 }
+
+/* Password recovery reuses the login shell; only its state content changes. */
+.auth-recovery-page .auth-brand-link { text-decoration: none; width: fit-content; }
+.auth-state-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: #eaf3fa; color: var(--login-accent); margin-bottom: 23px; }
+.auth-state-icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.auth-recovery-page .login-form-wrap { padding-block: 38px; }
+.auth-recovery-page .login-submit { padding: 12px 14px; text-decoration: none; text-align: center; line-height: 1.4; }
+.auth-back-link { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 26px 0 0; font-size: 12px; color: var(--login-accent); text-decoration: none; }
+.auth-back-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.auth-info-note { padding: 16px 18px; background: #f3f7fa; border-left: 2px solid #87b0c9; border-radius: 0 8px 8px 0; color: var(--login-muted); font-size: 12px; line-height: 1.7; margin-bottom: 26px; }
+.auth-info-note p { margin: 0 0 4px; font-weight: 600; color: var(--login-ink); }
+.auth-field-help { color: var(--login-muted); font-size: 11px; line-height: 1.6; margin-top: 9px; }
+.auth-field-help ul { padding-left: 17px; margin: 0; }
+.auth-recovery-page ul.field-error { padding-left: 17px; margin: 8px 0 0; }
+@media (max-width: 700px) {
+  .auth-recovery-page .login-form-wrap { padding-block: 30px; }
+  .auth-recovery-page .login-access h1 br { display: none; }
+}

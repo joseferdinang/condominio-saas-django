@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body_class %}login-page auth-recovery-page{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'css/login.css' %}?v=20261003.1">{% endblock %}
+{% block content %}
+<div class="login-experience">
+  <section class="login-access" aria-labelledby="recovery-heading">
+    <a class="login-brand auth-brand-link" href="{% url 'accounts:login' %}" aria-label="Mi Condominio, volver a iniciar sesión">
+      <span class="login-brand-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 27V10l10-5 10 5v17M12 27V14h8v13M15 18h2M15 22h2"/></svg></span>
+      <span>Mi Condominio<small>Un mejor lugar para vivir</small></span>
+    </a>
+    <div class="login-form-wrap">
+      <span class="auth-state-icon" aria-hidden="true"><svg viewBox="0 0 32 32">{% block state_icon %}<rect x="7" y="14" width="18" height="14" rx="3"/><path d="M11 14V9a5 5 0 0 1 10 0v5M16 19v4"/>{% endblock %}</svg></span>
+      <p class="login-kicker">{% block auth_kicker %}RECUPERA TU ACCESO{% endblock %}</p>
+      {% block auth_content %}{% endblock %}
+    </div>
+    <div class="login-security-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg> Tu acceso sigue protegido</div>
+  </section>
+  <figure class="login-scene">
+    <div class="login-scene-top"><span>DISEÑADO PARA VIVIR MEJOR</span><span class="login-scene-number" aria-hidden="true">02 / TU ACCESO</span></div>
+    {% include 'registration/partials/login_architecture.html' %}
+    <figcaption class="login-story">
+      <span class="login-story-label"><span aria-hidden="true"></span> Vuelve a tu comunidad</span>
+      <h2>Todo en su lugar.<br> También tu acceso.</h2>
+      <p>Te ayudamos a volver al espacio<br> donde tu edificio se organiza.</p>
+    </figcaption>
+    <span class="login-image-note">Mi Condominio · Administración clara</span>
+  </figure>
+</div>
+{% endblock %}
