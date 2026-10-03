@@ -12,8 +12,9 @@
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/sidebar.js' %}?v=20260920.2" defer></script>
   <script src="{% static 'js/theme.js' %}?v=20260920.2" defer></script>
+  {% block extra_head %}{% endblock %}
 </head>
-<body class="minimal-ui {% if user.is_authenticated %}has-sidebar{% endif %}{% if nav_es_residente %} role-resident{% endif %}">
+<body class="minimal-ui {% if user.is_authenticated %}has-sidebar{% endif %}{% if nav_es_residente %} role-resident{% endif %} {% block body_class %}{% endblock %}">
   <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
   <div class="global-progress htmx-indicator" aria-label="Cargando"></div>
 

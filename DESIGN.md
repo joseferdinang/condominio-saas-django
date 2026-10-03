@@ -40,3 +40,16 @@ los recibos y exportaciones imprimibles conservan sus estilos.
 Usar separación y jerarquía para comparar; respetar preferencias de movimiento
 reducido y de tema. No inventar métricas, datos, rutas ni acciones. Validar móvil,
 escritorio, modo oscuro y teclado antes de publicar.
+
+## Acceso al portal
+El login usa la dirección aprobada de arquitectura ilustrada, aislada en
+`login.css`: blanco y azul petróleo, formulario a la izquierda e ilustración
+SVG original a la derecha, sin datos ficticios. No representa un edificio real.
+La ilustración vive en `registration/partials/login_architecture.html`, con
+tejado separado, ventanas y trazos de plano. No necesita imágenes externas.
+A 700 px o menos, el formulario aparece primero y la ilustración después.
+Entrada breve de contenido y tejado, dibujo de cotas y luz de ventana; las
+animaciones terminan y `prefers-reduced-motion` las elimina. El hover del tejado
+solo aplica a dispositivos con ratón. Se conservan foco, errores y carga.
+Mostrar/ocultar contraseña es una mejora progresiva: el formulario funciona sin
+JavaScript. Se conserva el login, CSRF, recuperación y redirección de Django.
