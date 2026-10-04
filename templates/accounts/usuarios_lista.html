@@ -5,10 +5,10 @@
 <section class="card form-card">
   <form method="get" class="user-search"><label for="buscar-usuario">Buscar usuario</label><div><input id="buscar-usuario" name="q" type="search" value="{{ busqueda }}" placeholder="Nombre, usuario o correo"><button class="button button-secondary" type="submit">Buscar</button></div></form>
 </section>
-<section class="card table-card mobile-cards" aria-label="Usuarios del edificio">
+<section class="card table-card mobile-cards user-management-table" aria-label="Usuarios del edificio">
   <table><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
   {% for item in pagina %}<tr>
-    <td data-label="Usuario"><strong>{{ item.usuario.get_full_name|default:item.usuario.username }}</strong><small class="user-handle">@{{ item.usuario.username }}</small></td>
+    <td data-label="Usuario"><span class="user-details"><strong>{{ item.usuario.get_full_name|default:item.usuario.username }}</strong><small class="user-handle">@{{ item.usuario.username }}</small></span></td>
     <td data-label="Correo">{{ item.usuario.email|default:"Sin correo" }}</td>
     <td data-label="Rol">{{ item.get_rol_display }}</td>
     <td data-label="Estado">{% if item.activo %}<span class="status-pill">Activo</span>{% else %}<span class="status-pill status-muted">Sin acceso</span>{% endif %}</td>

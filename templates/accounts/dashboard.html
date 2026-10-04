@@ -7,6 +7,21 @@
 </section>
 <section class="home-section" aria-labelledby="edificios-title">
   <div class="section-header"><div><h2 id="edificios-title">Mis edificios</h2><p class="section-description">{{ edificios|length }} asignado{{ edificios|length|pluralize }}</p></div></div>
-  <div class="building-grid">{% for edificio in edificios %}<a class="card building-card" href="{% url 'accounts:edificio_detalle' edificio.id %}"><span class="building-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 28V10l11-6 11 6v18M10 28V14h12v14M13 18h2M18 18h2M13 22h2M18 22h2M14 28v-3h4v3"/></svg></span><span class="building-card-copy"><strong>{{ edificio.nombre }}</strong><small>{{ edificio.direccion|truncatechars:80 }}</small></span><span class="building-card-arrow" aria-hidden="true">›</span></a>{% empty %}<div class="card empty-state"><span class="empty-icon" aria-hidden="true">⌂</span><strong>No tienes edificios asignados</strong><p>Solicita acceso a la administración de tu condominio.</p></div>{% endfor %}</div>
+  <div class="building-grid">
+    {% for edificio in edificios %}
+    <div class="building-entry">
+      <a class="card building-card" href="{% url 'accounts:edificio_detalle' edificio.id %}">
+        <span class="building-card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 28V10l11-6 11 6v18M10 28V14h12v14M13 18h2M18 18h2M13 22h2M18 22h2M14 28v-3h4v3"/></svg></span>
+        <span class="building-card-copy"><strong>{{ edificio.nombre }}</strong><small>{{ edificio.direccion|truncatechars:80 }}</small></span>
+        <span class="building-card-arrow" aria-hidden="true">›</span>
+      </a>
+      {% if edificio.pk in edificios_administrables %}
+      <a class="button button-secondary building-users-link" href="{% url 'accounts:usuarios_lista' edificio.id %}">Administrar usuarios<span class="sr-only"> de {{ edificio.nombre }}</span></a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="card empty-state"><span class="empty-icon" aria-hidden="true">⌂</span><strong>No tienes edificios asignados</strong><p>Solicita acceso a la administración de tu condominio.</p></div>
+    {% endfor %}
+  </div>
 </section>
 {% endblock %}

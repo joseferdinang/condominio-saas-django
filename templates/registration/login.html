@@ -17,6 +17,7 @@
       <p class="login-kicker">TU ESPACIO, EN UN SOLO LUGAR</p>
       <h1 id="login-heading">Bienvenido a<br> tu comunidad.</h1>
       <p class="login-intro">Tus cuentas claras. Tu edificio al día.<br> Entra y gestiona lo que importa.</p>
+      {% if request.GET.inactivo %}<div class="message message-info" role="status">Tu sesión se cerró por 5 minutos sin actividad. Vuelve a iniciar sesión para continuar.</div>{% endif %}
       {% if form.errors %}<div class="message message-error login-error" role="alert">Usuario o contraseña incorrectos. Revisa tus datos e inténtalo de nuevo.</div>{% endif %}
       <form method="post" class="login-form" data-login-form>
         {% csrf_token %}

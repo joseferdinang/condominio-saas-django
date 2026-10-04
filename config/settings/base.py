@@ -118,6 +118,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "accounts.idle.IdleSessionMiddleware",
     "core.audit_middleware.AuditActorMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -136,6 +137,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.navegacion_portal",
+                "accounts.idle.idle_session_context",
             ],
         },
     },
@@ -143,6 +145,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
+
+# Enforced on the server, independently of browser JavaScript.
+SESSION_IDLE_TIMEOUT = 300
+SESSION_COOKIE_AGE = SESSION_IDLE_TIMEOUT
 
 DATABASES = {"default": postgres_database_config()}
 

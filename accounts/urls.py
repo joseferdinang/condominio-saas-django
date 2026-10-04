@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, reverse_lazy
 
 from . import views
+from .idle import session_activity
 
 app_name = "accounts"
 
@@ -13,6 +14,7 @@ urlpatterns = [
         name="login",
     ),
     path("cuentas/logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("cuentas/sesion/actividad/", session_activity, name="session_activity"),
     path("cuentas/mi-cuenta/", views.mi_cuenta, name="mi_cuenta"),
     path(
         "cuentas/apariencia/",

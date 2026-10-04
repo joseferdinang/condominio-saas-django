@@ -3,6 +3,7 @@
 !.env.example
 !.env.production.example
 .secrets/
+jose-ferdinand-credentials.json
 .pilot-local/
 .ops-locks/
 backups/

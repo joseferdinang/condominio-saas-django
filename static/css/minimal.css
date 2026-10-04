@@ -76,6 +76,9 @@ html[data-theme="oscuro"] {
 .minimal-ui .action-strip a:hover,
 .minimal-ui .quick-action:hover,
 .minimal-ui .building-card:hover { transform: none; box-shadow: none; background: var(--nav-surface); border-color: var(--line); }
+.minimal-ui .building-entry { display: flex; flex-direction: column; gap: .5rem; }
+.minimal-ui .building-users-link { align-self: flex-start; }
+.minimal-ui .session-idle-note { display: block; margin-top: .65rem; color: var(--muted); font-size: .72rem; line-height: 1.5; }
 .minimal-ui .action-strip a > span { background: transparent; width: 25px; border-radius: 0; }
 .minimal-ui .portal-welcome,
 .minimal-ui .resident-welcome { min-height: 0; margin: 0 0 1.5rem; padding: 0 0 1.5rem; color: var(--ink); background: transparent; border-radius: 0; border-bottom: 1px solid var(--line); box-shadow: none; }
@@ -128,6 +131,9 @@ html[data-theme="oscuro"] {
   .minimal-ui .balance-summary > .status { grid-column: auto; }
   .minimal-ui .quick-action { min-height: 100px; }
   .minimal-ui .mobile-cards tr { box-shadow: none; border-radius: 8px; }
+  .minimal-ui .user-management-table tr { grid-template-columns: minmax(0, 1fr); }
+  .minimal-ui .user-management-table td { min-width: 0; overflow-wrap: anywhere; }
+  .minimal-ui .user-management-table td:first-child:not([colspan]) { display: grid; grid-template-columns: 70px minmax(0, 1fr); }
   .minimal-ui .auth-card { border-radius: 10px; }
   .minimal-ui .account-hero-secondary { border-top-color: var(--line); }
 }

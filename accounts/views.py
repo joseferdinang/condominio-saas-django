@@ -67,10 +67,19 @@ def mi_cuenta(request):
 
 @login_required
 def dashboard(request):
+    edificios = edificios_visibles(request.user)
+    administrables = (
+        set(edificios.values_list("pk", flat=True))
+        if request.user.is_superuser
+        else set(UsuarioEdificio.objects.filter(
+            usuario=request.user, activo=True, rol=UsuarioEdificio.Rol.ADMINISTRADOR,
+            edificio__activo=True,
+        ).values_list("edificio_id", flat=True))
+    )
     return render(
         request,
         "accounts/dashboard.html",
-        {"edificios": edificios_visibles(request.user)},
+        {"edificios": edificios, "edificios_administrables": administrables},
     )
 
 
