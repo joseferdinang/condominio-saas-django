@@ -23,4 +23,3 @@
 </section>
 {% if pagina.has_other_pages %}<nav class="pagination" aria-label="Páginas de usuarios">{% if pagina.has_previous %}<a href="?q={{ busqueda|urlencode }}&page={{ pagina.previous_page_number }}">Anterior</a>{% endif %}<span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>{% if pagina.has_next %}<a href="?q={{ busqueda|urlencode }}&page={{ pagina.next_page_number }}">Siguiente</a>{% endif %}</nav>{% endif %}
 {% endblock %}
-
