@@ -946,6 +946,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visibl
 .attention-banner > div { flex: 1; }
 .attention-banner p { margin: .1rem 0 0; color: #795918; font-size: .85rem; }
 .attention-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #f6c868; color: #573500; font-weight: 900; }
+.attention-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .metric-card { position: relative; overflow: hidden; min-height: 154px; padding: 1.15rem; }
 .metric-card .metric-icon { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: .75rem; border-radius: 11px; background: #e4f3f5; color: var(--brand); font-weight: 900; }
 .metric-card.metric-primary { color: #fff; border-color: transparent; background: var(--brand-dark); }
@@ -1313,3 +1314,4 @@ html[data-theme="oscuro"] .mobile-bottom-nav { background: rgba(24,35,45,.96); }
   }
   .mobile-bottom-nav, .attention-banner, .action-strip { display: none !important; }
 }
+

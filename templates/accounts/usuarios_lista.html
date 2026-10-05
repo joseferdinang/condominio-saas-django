@@ -16,10 +16,11 @@
       {% if not item.usuario.is_superuser and user.is_superuser or not item.usuario.is_superuser and item.rol != 'ADMINISTRADOR' %}
       <a href="{% url 'accounts:usuario_editar' edificio.id item.id %}">Editar</a>
       {% if item.activo and item.usuario_id != user.id %}<a class="text-danger" href="{% url 'accounts:usuario_retirar' edificio.id item.id %}">Retirar acceso</a>{% endif %}
-      {% else %}<span class="muted">Cuenta protegida</span>{% endif %}
+      {% else %}<span class="muted protected-account-note">{% if item.usuario.is_superuser %}Cuenta de superadministración protegida{% elif item.usuario_id == user.id %}No puedes editar tu propio rol de administrador{% else %}Solo un superadministrador puede editar otro administrador{% endif %}</span>{% endif %}
     </td>
   </tr>{% empty %}<tr><td colspan="5">No hay usuarios que coincidan con la búsqueda.</td></tr>{% endfor %}
   </tbody></table>
 </section>
 {% if pagina.has_other_pages %}<nav class="pagination" aria-label="Páginas de usuarios">{% if pagina.has_previous %}<a href="?q={{ busqueda|urlencode }}&page={{ pagina.previous_page_number }}">Anterior</a>{% endif %}<span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>{% if pagina.has_next %}<a href="?q={{ busqueda|urlencode }}&page={{ pagina.next_page_number }}">Siguiente</a>{% endif %}</nav>{% endif %}
 {% endblock %}
+
