@@ -12,7 +12,7 @@
   </div>
   {% endif %}
 </div>
-<div class="card table-wrap mobile-cards"><table><thead><tr><th>Apartamento</th><th>Cuota mensual</th><th>Saldo</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
+<div class="card table-wrap mobile-cards"><table class="apartment-list-table"><thead><tr><th>Apartamento</th><th>Cuota mensual</th><th>Saldo</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
   {% for fila in filas %}
   <tr{% if not fila.apartamento.activo %} class="row-inactive"{% endif %}>
     <td data-label="Apartamento"><strong>{{ fila.apartamento.numero }}</strong></td>

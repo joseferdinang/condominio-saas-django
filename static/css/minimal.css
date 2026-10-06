@@ -145,3 +145,15 @@ html[data-theme="oscuro"] {
   .minimal-ui .auth-card { border-radius: 10px; }
   .minimal-ui .account-hero-secondary { border-top-color: var(--line); }
 }
+
+/* Draw apartment-row separators once per row so cell borders cannot drift. */
+@media (min-width: 768px) {
+  .minimal-ui .apartment-list-table { border-collapse: separate; border-spacing: 0; }
+  .minimal-ui .apartment-list-table tbody tr {
+    background-image: linear-gradient(var(--line), var(--line));
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 100% 1px;
+  }
+  .minimal-ui .apartment-list-table tbody td { border-bottom: 0; }
+}
